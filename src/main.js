@@ -7,6 +7,7 @@ import firebase from 'firebase/app'
 import VueFirestore from 'vue-firestore'
 
 import 'firebase/firestore'
+import 'firebase/storage'
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -22,7 +23,9 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig)
+export const storageRef = firebase.storage().ref();
 export const db = firebase.firestore()
+
 Vue.use(VueFirestore)
 
 

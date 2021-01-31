@@ -6,7 +6,7 @@ const baseEmptyItem = {
     itemType : "",
     type : 'item',
     elements: [],
-    photo:null
+    photoUrl: ""
 }
 
 export function emptyItem() {

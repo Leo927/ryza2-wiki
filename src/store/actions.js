@@ -1,5 +1,4 @@
-import { db } from "@/main";
-
+import { db, storageRef } from "@/main";
 
 function getDeviation(current, original) {
     let pos = current.filter((x) => !original.includes(x));
@@ -76,8 +75,14 @@ export default {
             dispatch('updateItem', e)
         }
     },
+    
     updateDifferences({ dispatch }, { current, original }) {
         dispatch('updateReference', { current, original, from: 'sources', to: 'develops' })
         dispatch('updateReference', { current, original, from: 'develops', to: 'sources' })
+    },
+
+    uploadImage(_,{type,id, file, callback}){
+        const ref = storageRef.child(`/$images/${type}/${id}`)
+        ref.put(file).then(callback)
     }
 }
