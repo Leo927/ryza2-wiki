@@ -1,5 +1,5 @@
-export default{
-    setState(state, changeTo){
+export default {
+    setState(state, changeTo) {
         state.editMode = changeTo;
     }
 }
