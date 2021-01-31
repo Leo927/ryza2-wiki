@@ -5,7 +5,8 @@ const baseEmptyItem = {
     develops : [],
     itemType : "",
     type : 'item',
-    elements: []
+    elements: [],
+    photo:null
 }
 
 export function emptyItem() {

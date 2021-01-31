@@ -56,9 +56,10 @@
         <b-form-checkbox-group
           id="checkbox-group-1"
           v-model="item.elements"
-          :options="['风','冰','火','雷']"
+          :options="['风', '冰', '火', '雷']"
           :aria-describedby="ariaDescribedby"
           name="flavour-1"
+          :disabled="!editMode"
         ></b-form-checkbox-group>
       </b-form-group>
 
@@ -177,6 +178,15 @@ export default {
     },
     ...mapState(["editMode"]),
   },
+
+
+  watch:{
+    '$route.path':function(){
+      this.initialize()
+    }
+  },
+
+
   methods: {
     ...mapActions([
       "addItem",
@@ -244,17 +254,26 @@ export default {
     deleteDevelop(index) {
       this.item.develops.splice(index, 1);
     },
+
+    initialize() {
+      if (this.$route.params.id) {
+        this.getItem({ type: "item", id: this.$route.params.id }).then(
+          (response) => {
+            this.item = response.data();
+            this.item.id = this.$route.params.id;
+            this.original = JSON.parse(JSON.stringify(this.item));
+          }
+        );
+      }
+    },
   },
-  created() {
-    if (this.$route.params.id) {
-      this.getItem({ type: "item", id: this.$route.params.id }).then(
-        (response) => {
-          this.item = response.data();
-          this.item.id = this.$route.params.id;
-          this.original = JSON.parse(JSON.stringify(this.item));
-        }
-      );
-    }
+
+  created(){
+    this.initialize()
   },
+
+  beforeRouteUpdate(){
+    this.initialize()
+  }
 };
 </script>
