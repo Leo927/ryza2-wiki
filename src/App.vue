@@ -1,9 +1,6 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/itemlist">Items</router-link>
-    </div>
+    <Navbar></Navbar>
     <router-view/>
   </div>
 </template>
@@ -30,3 +27,12 @@
   }
 }
 </style>
+
+<script>
+import Navbar from '@/components/Navbar';
+export default {
+  components:{
+    Navbar
+  }
+}
+</script>
