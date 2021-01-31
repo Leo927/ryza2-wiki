@@ -1,77 +1,86 @@
 <template>
   <div>
     <b-row>
-      <img
-        class="mx-auto"
-        :src="item.photoUrl ? item.photoUrl : 'https://via.placeholder.com/150'"
-        alt=""
-        @click="printItem"
-      />
-    </b-row>
-
-    <b-row>
-      <b-col sm="9" class="mx-auto">
+      <b-col md="9 mx-auto">
         <div
           class="text-success text-center"
           :style="{ visibility: lastItem ? 'visible' : 'hidden' }"
         >
           {{ lastItem }} {{ result }}成功
         </div>
-        <b-form-group
-          id="input-group-0"
-          label="ID:"
-          label-for="input-0"
-          v-if="editMode && !createMode"
-        >
-          <b-form-input
-            id="input-0"
-            v-model="item.id"
-            type="text"
-            placeholder="无"
-            disabled
-          ></b-form-input>
-        </b-form-group>
-        <b-form-group id="input-group-1" label="名称:" label-for="input-1">
-          <b-form-input
-            id="input-1"
-            v-model="item.name"
-            type="text"
-            placeholder="输入名称"
-            :disabled="!editMode"
-            required
-          ></b-form-input>
-        </b-form-group>
 
-        <b-form-group id="input-group-3" label="物品类型:" label-for="input-3">
-          <b-form-select
-            id="input-3"
-            v-model="item.itemType"
-            :options="ItemType"
-            required
-            :disabled="!editMode"
-          ></b-form-select>
-        </b-form-group>
+        <b-row>
+          <img
+            class="col-md-3"
+            :src="
+              item.photoUrl ? item.photoUrl : 'https://via.placeholder.com/150'
+            "
+            alt=""
+            @click="printItem"
+            style="height: 100%"
+          />
+          <div class="col-9">
+            <b-form-group
+              id="input-group-0"
+              label="ID:"
+              label-for="input-0"
+              v-if="editMode && !createMode"
+            >
+              <b-form-input
+                id="input-0"
+                v-model="item.id"
+                type="text"
+                placeholder="无"
+                disabled
+              ></b-form-input>
+            </b-form-group>
+            <b-form-group id="input-group-1" label="名称:" label-for="input-1">
+              <b-form-input
+                id="input-1"
+                v-model="item.name"
+                type="text"
+                placeholder="输入名称"
+                :disabled="!editMode"
+                required
+              ></b-form-input>
+            </b-form-group>
 
-        <b-form-group v-if="editMode">
-          <b-form-file
-            v-model="photoFile"
-            :state="Boolean(photoFile)"
-            placeholder="选择一个文件或者拖到此处"
-            drop-placeholder="拖到此处"
-            :disabled="!editMode"
-          ></b-form-file>
-        </b-form-group>
+            <b-form-group
+              id="input-group-3"
+              label="物品类型:"
+              label-for="input-3"
+            >
+              <b-form-select
+                id="input-3"
+                v-model="item.itemType"
+                :options="ItemType"
+                required
+                :disabled="!editMode"
+              ></b-form-select>
+            </b-form-group>
 
-        <b-form-group label="属性:" v-slot="{ ariaDescribedby }">
-          <b-form-checkbox-group
-            id="checkbox-group-1"
-            v-model="item.elements"
-            :options="['风', '冰', '火', '雷']"
-            :aria-describedby="ariaDescribedby"
-            name="flavour-1"
-            :disabled="!editMode"
-          ></b-form-checkbox-group>
-        </b-form-group>
+            <b-form-group v-if="editMode">
+              <b-form-file
+                v-model="photoFile"
+                :state="Boolean(photoFile)"
+                placeholder="选择一个文件或者拖到此处"
+                drop-placeholder="拖到此处"
+                :disabled="!editMode"
+              ></b-form-file>
+            </b-form-group>
+
+            <b-form-group label="属性:" v-slot="{ ariaDescribedby }">
+              <b-form-checkbox-group
+                id="checkbox-group-1"
+                v-model="item.elements"
+                :options="['风', '冰', '火', '雷']"
+                :aria-describedby="ariaDescribedby"
+                name="flavour-1"
+                :disabled="!editMode"
+              ></b-form-checkbox-group>
+            </b-form-group>
+          </div>
+        </b-row>
 
         <b-row class="mb-3">
           <div class="col-md">
@@ -216,17 +225,21 @@ export default {
           callback: (response) => {
             console.log(response.ref);
             response.ref.getDownloadURL().then((url) => {
-              console.log(url);
               this.item.photoUrl = url;
-              console.log(this.item)
-          if (this.createMode) {
-            this.handleCreate();
-          } else {
-            this.handleUpdate();
-          }
+              if (this.createMode) {
+                this.handleCreate();
+              } else {
+                this.handleUpdate();
+              }
             });
           },
         });
+      } else {
+        if (this.createMode) {
+          this.handleCreate();
+        } else {
+          this.handleUpdate();
+        }
       }
     },
 
