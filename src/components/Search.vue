@@ -4,6 +4,8 @@
       list="my-list-id"
       v-model="keyword"
       placeholder="搜索"
+      class="border-5"
+      :class="{'border-danger':error}"
       v-on:keyup.enter="onSearch()"
     ></b-form-input>
   </div>
@@ -23,6 +25,7 @@ export default {
     return {
       keyword: "",
       options: [],
+      error: false
     };
   },
 
@@ -35,9 +38,12 @@ export default {
       });
       this.options = data;
       if (data.length == 0) {
+        this.error=true;
         return;
       }
+      this.error=false;
       this.onEnter(data[0]);
+      this.keyword ="";
     },
   },
 };

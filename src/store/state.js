@@ -1,9 +1,6 @@
-import { db } from "@/main";
+import toolTypes from '@/localdata/tools';
+
 export default{
-    editMode:false ,
-    firestore: function () {
-        return {
-          items: db.collection("items"),
-        };
-    }
+    editMode:false,
+    toolTypes
 }

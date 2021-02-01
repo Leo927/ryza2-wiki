@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mb-5">
     <b-navbar toggleable="lg" type="dark" variant="info">
       <b-navbar-brand to="/">主页</b-navbar-brand>
 
@@ -9,6 +9,14 @@
         <b-navbar-nav>
           <b-nav-item to="/items">物品</b-nav-item>
         </b-navbar-nav>
+        <b-navbar-nav>
+          <b-nav-item to="/locations">地点</b-nav-item>
+        </b-navbar-nav>
+
+        <b-navbar-nav>
+          <b-nav-item to="/maps">地图</b-nav-item>
+        </b-navbar-nav>
+
 
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
@@ -22,9 +30,14 @@
               >Search</b-button
             >
           </b-nav-form>
-            <b-form-checkbox class="my-auto mx-5" v-model="editMode" name="check-button" switch>
-              编辑模式
-            </b-form-checkbox>
+          <b-form-checkbox
+            class="my-auto mx-5"
+            v-model="editMode"
+            name="check-button"
+            switch
+          >
+            编辑模式
+          </b-form-checkbox>
 
           <b-nav-item-dropdown right>
             <!-- Using 'button-content' slot -->
@@ -54,10 +67,8 @@ export default {
       },
     },
   },
-  methods:{
-      ...mapActions([
-          'setEditMode'
-      ])
-  }
+  methods: {
+    ...mapActions(["setEditMode"]),
+  },
 };
 </script>

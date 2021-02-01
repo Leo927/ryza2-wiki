@@ -33,7 +33,31 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/ItemDetail.vue')
-  }
+  },
+  {
+    path: '/locations/',
+    name: '地点',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../components/LocationList.vue')
+  },
+  {
+    path: '/maps/',
+    name: '地图',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/Maps.vue')
+  },
+  {
+    path: '/map/',
+    name: '创建地图',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../components/MapDetail.vue')
+  },
 ]
 
 const router = new VueRouter({

@@ -1,7 +1,21 @@
 <template>
-  <div>
+  <b-container>
+    <b-button @click.stop="print">DEBUG</b-button>
+    <!-- resource point editor modal -->
+    <b-modal id="modal-create" size="lg" title="资源点编辑" v-if="editMode">
+      <ResoucePointDetail
+        name="create"
+        :onSubmit="onSubmitResourcePoint"
+        :onCancel="onCancelResourcePoint"
+      ></ResoucePointDetail>
+      <template v-slot:modal-footer>
+        <span></span>
+      </template>
+    </b-modal>
+
     <b-row>
-      <b-col md="9 mx-auto">
+      <b-col>
+        <!-- update hint -->
         <div
           class="text-success text-center"
           :style="{ visibility: lastItem ? 'visible' : 'hidden' }"
@@ -10,16 +24,17 @@
         </div>
 
         <b-row>
+          <!-- 地图 -->
           <img
-            class="col-md-3"
+            class="col-md-6"
             :src="
               item.photoUrl ? item.photoUrl : 'https://via.placeholder.com/150'
             "
             alt=""
-            @click="printItem"
             style="height: 100%"
           />
-          <div class="col-9">
+          <div class="col-md">
+            <!-- ID -->
             <b-form-group
               id="input-group-0"
               label="ID:"
@@ -34,6 +49,8 @@
                 disabled
               ></b-form-input>
             </b-form-group>
+
+            <!-- 名称 -->
             <b-form-group id="input-group-1" label="名称:" label-for="input-1">
               <b-form-input
                 id="input-1"
@@ -45,22 +62,15 @@
               ></b-form-input>
             </b-form-group>
 
+            <!-- 上传图片 -->
             <b-form-group
-              id="input-group-3"
-              label="物品类型:"
-              label-for="input-3"
+              v-if="editMode"
+              id="file-group-1"
+              label="上传图片"
+              label-for="file-1"
             >
-              <b-form-select
-                id="input-3"
-                v-model="item.itemType"
-                :options="ItemType"
-                required
-                :disabled="!editMode"
-              ></b-form-select>
-            </b-form-group>
-
-            <b-form-group v-if="editMode">
               <b-form-file
+                id="file-1"
                 v-model="photoFile"
                 :state="Boolean(photoFile)"
                 placeholder="选择一个文件或者拖到此处"
@@ -69,79 +79,30 @@
               ></b-form-file>
             </b-form-group>
 
-            <b-form-group label="属性:" v-slot="{ ariaDescribedby }">
-              <b-form-checkbox-group
-                id="checkbox-group-1"
-                v-model="item.elements"
-                :options="['风', '冰', '火', '雷']"
-                :aria-describedby="ariaDescribedby"
-                name="flavour-1"
-                :disabled="!editMode"
-              ></b-form-checkbox-group>
-            </b-form-group>
-          </div>
-        </b-row>
+            <!-- 添加资源点 -->
+            <b-row>
+              
+            <b-button variant="primary" class="col-md-12 mb-2" v-b-modal.modal-create v-if="editMode"
+              >添加资源点</b-button
+            >
+            </b-row>
 
-        <b-row class="mb-3">
-          <div class="col-md">
-            <h3 class="text-center">来源</h3>
-            <div v-if="editMode">
-              <Search :collections="['item']" :onEnter="addSources"></Search>
-            </div>
-            <div>
-              <b-table
-                hover
-                :items="item.sources"
-                :fields="['name', editMode ? 'delete' : null]"
-              >
-                <template #cell(name)="data">
-                  <router-link :to="`/${data.item.type}/${data.item.id}`">{{
-                    data.item.name
-                  }}</router-link>
-                </template>
-                <template #cell(delete)="row">
-                  <b-button
-                    size="sm"
-                    @click="deleteSource(row.index)"
-                    class="mr-2"
-                  >
-                    删除
-                  </b-button>
-                </template>
-              </b-table>
-            </div>
-          </div>
-
-          <div class="col-md">
-            <h3 class="text-center">改变</h3>
-            <div v-if="editMode">
-              <Search :collections="['item']" :onEnter="addDevelop"></Search>
-            </div>
-            <div>
-              <b-table
-                hover
-                :items="item.develops"
-                :fields="['name', editMode ? 'delete' : null]"
-              >
-                <template #cell(name)="data">
-                  <router-link :to="`/${data.item.type}/${data.item.id}`">{{
-                    data.item.name
-                  }}</router-link>
-                </template>
-                <template #cell(delete)="row">
-                  <b-button
-                    size="sm"
-                    @click="deleteDevelop(row.index)"
-                    class="mr-2"
-                  >
-                    删除
-                  </b-button>
-                </template>
-              </b-table>
+            <!-- 资源显示 -->
+            <div
+              v-for="(res, resPointIndex) in item.resourcePoints"
+              :key="resPointIndex"
+            >
+              <ResourcePointCard
+                :resourcePoint="item.resourcePoints[resPointIndex]"
+                :color="'yellow'"       
+                :resPointIndex="resPointIndex"
+                :resourcePointArray = "item.resourcePoints"    
+              ></ResourcePointCard>
             </div>
           </div>
         </b-row>
 
+        <!-- 按钮 -->
         <b-row>
           <b-button
             v-if="editMode"
@@ -168,29 +129,30 @@
         </b-row>
       </b-col>
     </b-row>
-  </div>
+  </b-container>
 </template>
 
 <script>
 import { mapState } from "vuex";
-import { emptyItem, ItemType } from "@/models/item";
+import { emptyMap } from "@/models/map";
 import { mapActions } from "vuex";
-import Search from "@/components/Search";
+import ResoucePointDetail from "@/components/ResourcePointDetail";
+import ResourcePointCard from "@/components/ResourcePointCard";
 
 export default {
   data() {
     return {
-      item: emptyItem(),
-      original: emptyItem(),
+      item: emptyMap(),
+      original: emptyMap(),
       result: "",
-      ItemType,
       lastItem: null,
       photoFile: null,
-      sources: [],
+      resourceIndex: null,
     };
   },
   components: {
-    Search,
+    ResoucePointDetail,
+    ResourcePointCard,
   },
   computed: {
     createMode() {
@@ -271,14 +233,14 @@ export default {
     },
 
     reset() {
-      this.item = emptyItem();
+      this.item = emptyMap();
       this.photoFile = null;
     },
 
     onDelete() {
       this.deleteItem(this.$route.params.id).then(() => {
         this.lastItem = this.item.name;
-        this.item = emptyItem();
+        this.item = emptyMap();
         this.result = "删除";
         this.$router.push("/items");
         this.updateDifferences({ current: this.item, original: this.original });
@@ -323,6 +285,24 @@ export default {
       }
     },
 
+    onSubmitResourcePoint(newPickable) {
+      this.item.resourcePoints.push(newPickable);
+      this.$bvModal.hide("modal-create");
+      console.log(this.item);
+    },
+
+    onCancelResourcePoint() {
+      this.$bvModal.hide("modal-create");
+    },
+
+    deleteResPoint(resPointIndex){
+      console.log(resPointIndex)
+      this.item.resourcePoints.splice(resPointIndex, 1)
+    },
+
+    print() {
+      console.log(this.item);
+    },
   },
 
   created() {
