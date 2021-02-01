@@ -19,7 +19,7 @@
 
     <b-row>
       <!-- 颜色 -->
-      <div class="col-md-2 border">
+      <div class="col-md-1 " :class="{'btn-primary':resPointIndex==selectedIndex, 'btn':editMode}" @click="onClickColor">
         <i class="fas fa-circle my-auto" :style="{'color':resourcePoint.color}"></i>
         </div>
       <div class="col-md">
@@ -43,13 +43,15 @@
         </ul>
       </div>
 
-      <b-button v-if="editMode" @click.stop="onEdit">
+      <b-col md="2">
+      <b-button v-if="editMode" @click.stop="onEdit" class="col-md" variant="info">
         编辑
       </b-button>
 
-      <b-button v-if="editMode" @click.stop="onDelete">
+      <b-button v-if="editMode" @click.stop="onDelete" class="col-md" variant="danger">
         删除
       </b-button>
+      </b-col>
 
     </b-row>
   </div>
@@ -63,6 +65,8 @@ export default {
   props: {
     resPointIndex: Number,
     resourcePointArray: Array,
+    onSelectRP: Function,
+    selectedIndex: Number,
   },
 
 
@@ -100,6 +104,13 @@ export default {
 
     onEdit(){
       this.$bvModal.show(`modal-${this.resPointIndex}`);
+    },
+
+    onClickColor(){
+      if(!this.editMode){
+        return
+      }
+      this.onSelectRP(this.resPointIndex)
     }
   }
 };

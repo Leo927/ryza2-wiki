@@ -79,12 +79,17 @@
               ></b-form-file>
             </b-form-group>
 
-            <!-- 添加资源点 -->
-            <b-row>
-              
-            <b-button variant="primary" class="col-md-12 mb-2" v-b-modal.modal-create v-if="editMode"
+            
+            <b-row class="mb-2">
+              <!-- 添加资源点 -->
+            <b-button variant="primary" class="col-md" v-b-modal.modal-create v-if="editMode"
               >添加资源点</b-button
             >
+              <!-- 删除资源坐标 -->
+              <b-button variant="danger" class="col-md" @click="selectedIndex=null" v-if="editMode"
+              >删除资源坐标</b-button
+            >
+            
             </b-row>
 
             <!-- 资源显示 -->
@@ -96,14 +101,16 @@
                 :resourcePoint="item.resourcePoints[resPointIndex]"
                 :color="'yellow'"       
                 :resPointIndex="resPointIndex"
-                :resourcePointArray = "item.resourcePoints"    
+                :resourcePointArray = "item.resourcePoints"  
+                :onSelectRP = "onSelectRP"
+                :selectedIndex = "selectedIndex"
               ></ResourcePointCard>
             </div>
           </div>
         </b-row>
 
         <!-- 按钮 -->
-        <b-row>
+        <b-row class="mt-3">
           <b-button
             v-if="editMode"
             class="col-md"
@@ -138,6 +145,7 @@ import { emptyMap } from "@/models/map";
 import { mapActions } from "vuex";
 import ResoucePointDetail from "@/components/ResourcePointDetail";
 import ResourcePointCard from "@/components/ResourcePointCard";
+import { getDeviation } from '@/businesslogic/findDifference.js'
 
 export default {
   data() {
@@ -148,6 +156,7 @@ export default {
       lastItem: null,
       photoFile: null,
       resourceIndex: null,
+      selectedIndex:null
     };
   },
   components: {
@@ -174,9 +183,16 @@ export default {
       "updateItem",
       "deleteItem",
       "searchAll",
-      "updateDifferences",
+      "updateSource",
       "uploadImage",
     ]),
+
+    localUpdateSource(){
+      this.updateSource({
+          deviation:getDeviation(this.getAllResources(this.item), this.getAllResources(this.original)),
+          source:this.item
+      });
+    },
 
     async onSubmit() {
       if (this.photoFile != null) {
@@ -185,7 +201,6 @@ export default {
           id: this.item.id,
           file: this.photoFile,
           callback: (response) => {
-            console.log(response.ref);
             response.ref.getDownloadURL().then((url) => {
               this.item.photoUrl = url;
               if (this.createMode) {
@@ -214,10 +229,10 @@ export default {
           type: this.item.type,
           id: this.item.id,
           file: this.photoFile,
-          callback: (response) => {
-            console.log(response);
+          callback: () => {
           },
         });
+        this.localUpdateSource()
       });
     },
 
@@ -225,10 +240,7 @@ export default {
       this.updateItem(this.item).then(() => {
         this.lastItem = this.item.name;
         this.result = "修改";
-        this.updateDifferences({
-          current: this.item,
-          original: this.original,
-        });
+        this.localUpdateSource();
       });
     },
 
@@ -243,7 +255,7 @@ export default {
         this.item = emptyMap();
         this.result = "删除";
         this.$router.push("/items");
-        this.updateDifferences({ current: this.item, original: this.original });
+        this.localUpdateSource()
       });
     },
 
@@ -275,7 +287,7 @@ export default {
 
     initialize() {
       if (this.$route.params.id) {
-        this.getItem({ type: "item", id: this.$route.params.id }).then(
+        this.getItem({ type: "map", id: this.$route.params.id }).then(
           (response) => {
             this.item = response.data();
             this.item.id = this.$route.params.id;
@@ -288,7 +300,6 @@ export default {
     onSubmitResourcePoint(newPickable) {
       this.item.resourcePoints.push(newPickable);
       this.$bvModal.hide("modal-create");
-      console.log(this.item);
     },
 
     onCancelResourcePoint() {
@@ -296,12 +307,23 @@ export default {
     },
 
     deleteResPoint(resPointIndex){
-      console.log(resPointIndex)
       this.item.resourcePoints.splice(resPointIndex, 1)
     },
 
+    onSelectRP(index){
+      if(index==this.selectedIndex){
+        this.selectedIndex=null
+      }else{
+        this.selectedIndex = index
+      }
+    },
+
+    getAllResources(item){
+      return item.resourcePoints.flat(3).map(x=>x.pickables).flat(3).map(x=>x.resources).flat(3)
+    },
+
     print() {
-      console.log(this.item);
+      console.log(this.getAllResources(this.item));
     },
   },
 
@@ -312,5 +334,7 @@ export default {
   beforeRouteUpdate() {
     this.initialize();
   },
+
+
 };
 </script>

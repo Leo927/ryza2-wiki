@@ -58,6 +58,14 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../components/MapDetail.vue')
   },
+  {
+    path: '/map/:id',
+    name: '创建地图',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../components/MapDetail.vue')
+  },
 ]
 
 const router = new VueRouter({

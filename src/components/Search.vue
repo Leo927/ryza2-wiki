@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="row">
     <b-form-input
       list="my-list-id"
       v-model="keyword"

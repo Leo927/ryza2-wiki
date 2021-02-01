@@ -16,7 +16,6 @@
               item.photoUrl ? item.photoUrl : 'https://via.placeholder.com/150'
             "
             alt=""
-            @click="printItem"
             style="height: 100%"
           />
           <div class="col-9">

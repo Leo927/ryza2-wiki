@@ -1,10 +1,6 @@
 import { db, storageRef } from "@/main";
+import { getDeviation } from '@/businesslogic/findDifference.js'
 
-function getDeviation(current, original) {
-    let pos = current.filter((x) => !original.includes(x));
-    let neg = original.filter((x) => !current.includes(x));
-    return { pos, neg };
-}
 
 
 export default {
@@ -29,7 +25,8 @@ export default {
         return db.collection("item")
             .doc(id)
             .delete();
-    },
+    },    
+
     async search(_, { keyword, collections }) {
         var queries = [];
         collections.forEach(col => {
@@ -38,8 +35,8 @@ export default {
         const data = await Promise.all(queries);
         return data.map(x => x.docs).flat(2).map(x => x.data())
     },
-    async updateReference({ dispatch }, { current, original, from, to }) {
-        const deviation = getDeviation(current[from], original[from]);
+
+    async updateSource({ dispatch }, { deviation, source, targetAttr="sources" }) {
         var e;
         for (let index = 0; index < deviation.pos.length; index++) {
             e = deviation.pos[index];
@@ -47,10 +44,10 @@ export default {
             if (e == null) {
                 throw "Error: cannot find element";
             }
-            e[to].push(current)
+            e[targetAttr].push(source)
             e = {
                 id: e.id,
-                [to]: e[to],
+                [targetAttr]: e[targetAttr],
                 type: e.type
             }
             dispatch('updateItem', e)
@@ -62,26 +59,31 @@ export default {
             if (e == null) {
                 throw "Error: cannot find element";
             }
-            const i = e[to].findIndex(x => x.id == current.id);
+            const i = e[targetAttr].findIndex(x => x.id == source.id);
             if (i == null) {
                 return;
             }
-            e[to].splice(i, 1)
+            e[targetAttr].splice(i, 1)
             e = {
                 id: e.id,
-                [to]: e[to],
+                [targetAttr]: e[targetAttr],
                 type: e.type
             }
             dispatch('updateItem', e)
         }
     },
-    
+
+    async updateReference({ dispatch }, { current, original, from, to }) {
+        const deviation = getDeviation(current[from], original[from]);
+        dispatch('updateSource',{deviation, source:current, targetAttr:to})
+    },
+
     updateDifferences({ dispatch }, { current, original }) {
         dispatch('updateReference', { current, original, from: 'sources', to: 'develops' })
         dispatch('updateReference', { current, original, from: 'develops', to: 'sources' })
     },
 
-    uploadImage(_,{type,id, file, callback}){
+    uploadImage(_, { type, id, file, callback }) {
         const ref = storageRef.child(`/$images/${type}/${id}`)
         ref.put(file).then(callback)
     }
