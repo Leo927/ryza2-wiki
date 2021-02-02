@@ -6,7 +6,7 @@
       placeholder="搜索"
       class="border-5"
       :class="{'border-danger':error}"
-      v-on:keyup.enter="onSearch()"
+      v-on:keyup.enter.prevent.stop="onSearch()"
     ></b-form-input>
   </div>
 </template>

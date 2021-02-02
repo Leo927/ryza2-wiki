@@ -27,16 +27,12 @@
 
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
-          <b-nav-form>
-            <b-form-input
-              size="sm"
-              class="mr-sm-2"
-              placeholder="Search"
-            ></b-form-input>
-            <b-button size="sm" class="my-2 my-sm-0" type="submit"
-              >Search</b-button
-            >
-          </b-nav-form>
+          <b-col>
+            <Search
+            :collections="['item','monster','pickable']"
+            :onEnter="directToDetail"
+            ></Search>
+            </b-col>
           <b-form-checkbox
             v-if="isAdmin"
             class="my-auto mx-5"
@@ -62,7 +58,7 @@
             v-if="!uid"
             v-b-modal.modal-login
             size="sm"
-            class="my-2 my-sm-0 ml-5"
+            class="col-md my-auto my-sm-0"
             >登录</b-button
           >
         </b-navbar-nav>
@@ -75,6 +71,7 @@
 import * as firebaseui from "firebaseui";
 import firebase from "firebase/app";
 import { mapActions, mapState, mapGetters } from "vuex";
+import Search from '@/components/Search'
 
 export default {
   computed: {
@@ -90,6 +87,10 @@ export default {
         this.setEditMode(newValue);
       },
     },
+  },
+
+  components:{
+    Search
   },
 
   data() {
@@ -120,6 +121,10 @@ export default {
         ],
       };
       this.loginUI.start("#firebaseui-auth-container", uiConfig);
+    },
+
+    directToDetail(source){
+      this.$router.push(`/${source.type}/${source.id}`);
     },
 
     async signOut() {
