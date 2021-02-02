@@ -19,7 +19,7 @@
 
     <b-row>
       <!-- 颜色 -->
-      <div class="col-md-1 " :class="{'btn-primary':resPointIndex==selectedIndex, 'btn':editMode}" @click="onClickColor">
+      <div class="col-md-1 my-auto" :class="{'btn-primary':resPointIndex==selectedIndex, 'btn':editMode}" @click="onClickColor">
         <i class="fas fa-circle my-auto" :style="{'color':resourcePoint.color}"></i>
         </div>
       <div class="col-md">

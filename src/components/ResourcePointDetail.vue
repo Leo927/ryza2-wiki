@@ -1,13 +1,5 @@
 <template>
   <div class="container">
-    <!-- 颜色 -->
-    <b-row>
-      <b-button class="col-md-6" @click="randomizeColor">随机颜色</b-button>
-      <i class="fas fa-circle my-auto col-md-6" :style="{'color':resourcePoint.color}"></i>
-    </b-row>
-
-
-
     <!-- 列表 -->
     <div
       v-for="(pick, pickIndex) in resourcePoint.pickables"
@@ -19,6 +11,7 @@
         <b-form-group label="工具" v-slot="{ ariaDescribedby }" class="mx-auto">
           <b-form-radio-group
             id="btn-radios-1"
+            button-variant="outline-info"
             v-model="resourcePoint.pickables[pickIndex].tool"
             :options="toolTypes"
             :aria-describedby="ariaDescribedby"
@@ -70,27 +63,36 @@
           </div>
         </b-col>
         <!-- 移除整行 -->
-        <b-button class="col-md-1" @click="deletePickable(pickIndex)">
+        <b-button class="col-md-1" @click="deletePickable(pickIndex)" variant="outline-danger">
           <i class="fas fa-minus"></i>
         </b-button>
       </b-row>
     </div>
 
-
     <b-row>
       <!-- 添加新项目 -->
-      <b-button class="col-md" variant="info" @click="addPickable"
+      <b-button variant="outline-info" class="col-md" @click="randomizeColor"
+        >随机颜色<i
+          class="fas fa-circle my-auto ml-auto"
+          :style="{ color: resourcePoint.color }"
+        ></i
+      ></b-button>
+      <b-button class="col-md" variant="outline-info" @click="addPickable"
         ><i class="fas fa-plus"></i
       ></b-button>
       <slot name="footbar">
         <b-button
           class="col-md"
-          variant="primary"
+          variant="outline-primary"
           @click.stop.prevent="onSubmit(resourcePoint)"
         >
           确定
         </b-button>
-        <b-button variant="danger" class="col-md" @click.stop.prevent="onCancel(resourcePoint)">
+        <b-button
+          variant="outline-danger"
+          class="col-md"
+          @click.stop.prevent="onCancel(resourcePoint)"
+        >
           取消
         </b-button>
       </slot>
@@ -146,13 +148,15 @@ export default {
       console.log(this.resourcePoint);
     },
 
-    randomizeColor(){
-      this.resourcePoint.color = `#${Math.floor(Math.random()*16777215).toString(16)}`;      
+    randomizeColor() {
+      this.resourcePoint.color = `#${Math.floor(
+        Math.random() * 16777215
+      ).toString(16)}`;
     },
 
-    deletePickable(pickableIndex){
+    deletePickable(pickableIndex) {
       this.resourcePointArray[this.index].pickables.splice(pickableIndex, 1);
-    }
+    },
   },
 
   created() {
@@ -160,6 +164,6 @@ export default {
     if (!this.createMode) {
       this.resourcePoint = this.resourcePointArray[this.index];
     }
-  }
+  },
 };
 </script>

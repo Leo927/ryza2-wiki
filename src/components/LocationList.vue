@@ -1,30 +1,54 @@
 <template>
   <div class="container">
+    <h1 class="text-center">地点</h1>
     <b-row class="col-md-6 mx-auto">
       <b-input
         class="list-group-item col-md"
-        v-on:keyup.enter="addLocation"
+        v-on:keyup.enter.stop.prevent="addLocation"
         v-model="location"
         v-if="editMode"
       >
       </b-input>
     </b-row>
 
+    <b-modal id="modal-edit">
+      <b-input
+        v-if="selectedIndex != null"
+        v-model="settingsDoc.locations[selectedIndex]"
+      ></b-input>
+      <template v-slot:modal-footer>
+        <b-button @click="updateLocation">确认</b-button>
+      </template>
+    </b-modal>
+
     <ul class="col-md-6 mx-auto" v-if="settingsDoc">
       <li
         class="list-group-item col-md-12"
-        v-for="(loc, index) in settingsDoc.locations ? settingsDoc.locations : []"
+        v-for="(loc, index) in settingsDoc.locations
+          ? settingsDoc.locations
+          : []"
         :key="loc"
       >
         <div class="row">
           <b-input
             class="col-md"
             v-model="settingsDoc.locations[index]"
-            v-on:keyup.enter="updateLocation"
-            :disabled="!editMode"
+            disabled
           >
           </b-input>
-          <b-button v-if="editMode" class="col-md-3" @click="deleteLocation(index)"
+          <b-button
+            variant="outline-info"
+            v-if="editMode"
+            class="col-md-2"
+            v-b-modal:modal-edit
+            @click="selectLocation(index)"
+            >修改</b-button
+          >
+          <b-button
+            variant="outline-danger"
+            v-if="editMode"
+            class="col-md-2"
+            @click="deleteLocation(index)"
             >删除</b-button
           >
         </div>
@@ -43,7 +67,8 @@ export default {
       settingsDoc: { locations: [] },
       location: "",
       collection: "misc",
-      doc: "settings"
+      doc: "settings",
+      selectedIndex: null,
     };
   },
   computed: {
@@ -58,7 +83,6 @@ export default {
   methods: {
     async addLocation() {
       if (this.location.length > 0) {
-        console.log(this.settingsDoc.locations)
         this.settingsDoc.locations.push(this.location);
         await db
           .collection(this.collection)
@@ -68,18 +92,23 @@ export default {
       }
     },
 
+    selectLocation(index) {
+      this.selectedIndex = index;
+    },
+
     async deleteLocation(index) {
-      this.locations.locations.locations.splice(index, 1);
+      this.settingsDoc.locations.splice(index, 1);
       await db
         .collection(this.collection)
         .doc(this.doc)
-        .update({ data: this.settingsDoc.locations });
+        .update({ locations: this.settingsDoc.locations });
     },
 
     updateLocation() {
       db.collection(this.collection)
         .doc(this.doc)
-        .update({ data: this.settingsDoc.locations });
+        .update({ locations: this.settingsDoc.locations });
+      this.$bvModal.hide("modal-edit");
     },
   },
 };
