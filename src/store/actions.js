@@ -33,7 +33,7 @@ export default {
             queries.push(db.collection(col).where('name', '==', keyword).limit(3).get())
         });
         const data = await Promise.all(queries);
-        return data.map(x => x.docs).flat(2).map(x => x.data())
+        return data.map(x => x.docs).flat(2).map((x) => { return {...x.data(), id:x.id}})
     },
 
     async updateSource({ dispatch }, { deviation, source, targetAttr="sources" }) {
