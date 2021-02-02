@@ -39,5 +39,10 @@ Vue.config.productionTip = false
 new Vue({
   router,
   store,
+  created(){    
+  firebase.auth().onAuthStateChanged((user) => {
+    this.$store.state.uid = user
+   });
+  },
   render: h => h(App)
 }).$mount('#app')
