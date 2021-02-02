@@ -5,20 +5,21 @@
         class="list-group-item col-md"
         v-on:keyup.enter="addLocation"
         v-model="location"
+        v-if="editMode"
       >
       </b-input>
     </b-row>
 
-    <ul class="col-md-6 mx-auto" v-if="locationsDoc">
+    <ul class="col-md-6 mx-auto" v-if="settingsDoc">
       <li
         class="list-group-item col-md-12"
-        v-for="(loc, index) in locationsDoc.data ? locationsDoc.data : []"
+        v-for="(loc, index) in settingsDoc.locations ? settingsDoc.locations : []"
         :key="loc"
       >
         <div class="row">
           <b-input
             class="col-md"
-            v-model="locationsDoc.data[index]"
+            v-model="settingsDoc.locations[index]"
             v-on:keyup.enter="updateLocation"
             :disabled="!editMode"
           >
@@ -39,8 +40,10 @@ import { mapState } from "vuex";
 export default {
   data() {
     return {
-      locationsDoc: { data: [] },
+      settingsDoc: { locations: [] },
       location: "",
+      collection: "misc",
+      doc: "settings"
     };
   },
   computed: {
@@ -48,34 +51,35 @@ export default {
   },
   firestore() {
     return {
-      locationsDoc: db.collection("misc").doc("locations"),
+      settingsDoc: db.collection(this.collection).doc(this.doc),
     };
   },
 
   methods: {
     async addLocation() {
       if (this.location.length > 0) {
-        this.locationsDoc.data.push(this.location);
+        console.log(this.settingsDoc.locations)
+        this.settingsDoc.locations.push(this.location);
         await db
-          .collection("misc")
-          .doc("locations")
-          .update({ data: this.locationsDoc.data });
+          .collection(this.collection)
+          .doc(this.doc)
+          .update({ locations: this.settingsDoc.locations });
         this.location = "";
       }
     },
 
     async deleteLocation(index) {
-      this.data.locations.locations.splice(index, 1);
+      this.locations.locations.locations.splice(index, 1);
       await db
-        .collection("misc")
-        .doc("locations")
-        .update({ data: this.locationsDoc.data });
+        .collection(this.collection)
+        .doc(this.doc)
+        .update({ data: this.settingsDoc.locations });
     },
 
     updateLocation() {
-      db.collection("misc")
-        .doc("locations")
-        .update({ data: this.locationsDoc.data });
+      db.collection(this.collection)
+        .doc(this.doc)
+        .update({ data: this.settingsDoc.locations });
     },
   },
 };

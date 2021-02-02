@@ -1,6 +1,5 @@
 <template>
   <div class="mb-5">
-
     <!-- 登录弹窗 -->
     <b-modal id="modal-login" @shown="onLoginModalShown">
       <div id="firebaseui-auth-container"></div>
@@ -39,6 +38,7 @@
             >
           </b-nav-form>
           <b-form-checkbox
+            v-if="isAdmin"
             class="my-auto mx-5"
             v-model="editMode"
             name="check-button"
@@ -58,7 +58,13 @@
           </b-nav-item-dropdown>
 
           <!-- 未登录 -->
-          <b-button v-if="!uid" v-b-modal.modal-login>登录</b-button>
+          <b-button
+            v-if="!uid"
+            v-b-modal.modal-login
+            size="sm"
+            class="my-2 my-sm-0 ml-5"
+            >登录</b-button
+          >
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
@@ -68,10 +74,12 @@
 <script>
 import * as firebaseui from "firebaseui";
 import firebase from "firebase/app";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapState, mapGetters } from "vuex";
+
 export default {
   computed: {
     ...mapState(["uid"]),
+    ...mapGetters(["isAdmin"]),
 
     editMode: {
       get: function () {
@@ -92,11 +100,10 @@ export default {
 
   methods: {
     ...mapActions(["setEditMode"]),
-
     onLoginModalShown() {
       var uiConfig = {
         callbacks: {
-          signInSuccessWithAuthResult: () =>{
+          signInSuccessWithAuthResult: () => {
             this.$bvModal.hide("modal-login");
             // User successfully signed in.
             // Return type determines whether we continue the redirect automatically
