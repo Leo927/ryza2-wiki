@@ -9,16 +9,16 @@
       </b-input>
     </b-row>
 
-    <ul class="col-md-6 mx-auto" v-if="data">
+    <ul class="col-md-6 mx-auto" v-if="locationsDoc">
       <li
         class="list-group-item col-md-12"
-        v-for="(loc, index) in data.locations ? data.locations.locations : []"
+        v-for="(loc, index) in locationsDoc.data ? locationsDoc.data : []"
         :key="loc"
       >
         <div class="row">
           <b-input
             class="col-md"
-            v-model="data.locations.locations[index]"
+            v-model="locationsDoc.data[index]"
             v-on:keyup.enter="updateLocation"
             :disabled="!editMode"
           >
@@ -39,7 +39,7 @@ import { mapState } from "vuex";
 export default {
   data() {
     return {
-      data: { locations: { locations: [] } },
+      locationsDoc: { data: [] },
       location: "",
     };
   },
@@ -48,18 +48,18 @@ export default {
   },
   firestore() {
     return {
-      data: db.collection("misc").doc("locations"),
+      locationsDoc: db.collection("misc").doc("locations"),
     };
   },
 
   methods: {
     async addLocation() {
       if (this.location.length > 0) {
-        this.data.locations.locations.push(this.location);
+        this.locationsDoc.data.push(this.location);
         await db
           .collection("misc")
           .doc("locations")
-          .update({ locations: this.data.locations });
+          .update({ data: this.locationsDoc.data });
         this.location = "";
       }
     },
@@ -69,13 +69,13 @@ export default {
       await db
         .collection("misc")
         .doc("locations")
-        .update({ locations: this.data.locations });
+        .update({ data: this.locationsDoc.data });
     },
 
     updateLocation() {
       db.collection("misc")
         .doc("locations")
-        .update({ locations: this.data.locations });
+        .update({ data: this.locationsDoc.data });
     },
   },
 };
