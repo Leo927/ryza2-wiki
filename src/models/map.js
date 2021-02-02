@@ -4,7 +4,7 @@ const baseEmptyItem = {
     map: "",
     resourcePoints:[],
     type : 'map',
-    photoUrl: ""
+    photoUrl: 'https://via.placeholder.com/150'
 }
 
 export function emptyMap() {

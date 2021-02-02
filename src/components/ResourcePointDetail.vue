@@ -158,7 +158,7 @@ export default {
   },
 
   created() {
-    randomizeColor();
+    this.randomizeColor();
     if (!this.createMode) {
       this.resourcePoint = this.resourcePointArray[this.index];
     }

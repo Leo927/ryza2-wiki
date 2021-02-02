@@ -25,14 +25,9 @@
 
         <b-row>
           <!-- 地图 -->
-          <img
-            class="col-md-6"
-            :src="
-              item.photoUrl ? item.photoUrl : 'https://via.placeholder.com/150'
-            "
-            alt=""
-            style="height: 100%"
-          />
+          <div class="col-md square">
+          <MapDrawer :map="item" :clickHandler="mapClickHandler"></MapDrawer>
+          </div>
           <div class="col-md">
             <!-- ID -->
             <b-form-group
@@ -139,13 +134,15 @@
   </b-container>
 </template>
 
+
 <script>
 import { mapState } from "vuex";
 import { emptyMap } from "@/models/map";
 import { mapActions } from "vuex";
 import ResoucePointDetail from "@/components/ResourcePointDetail";
 import ResourcePointCard from "@/components/ResourcePointCard";
-import { getDeviation } from '@/businesslogic/findDifference.js'
+import { getDeviation } from '@/businesslogic/findDifference.js';
+import MapDrawer from '@/components/MapDrawer'
 
 export default {
   data() {
@@ -162,6 +159,7 @@ export default {
   components: {
     ResoucePointDetail,
     ResourcePointCard,
+    MapDrawer
   },
   computed: {
     createMode() {
@@ -322,8 +320,18 @@ export default {
       return item.resourcePoints.flat(3).map(x=>x.pickables).flat(3).map(x=>x.resources).flat(3)
     },
 
+    mapClickHandler(percentPos){
+      if(!this.editMode){
+        return
+      }
+      if(this.selectedIndex == null){
+        return
+      }
+      this.item.resourcePoints[this.selectedIndex].pos.push(percentPos)      
+    },
+
     print() {
-      console.log(this.getAllResources(this.item));
+      console.log(this.item.resourcePoints);
     },
   },
 
