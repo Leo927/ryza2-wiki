@@ -1,6 +1,5 @@
 <template>
   <b-container>
-    <b-button @click.stop="print">DEBUG</b-button>
     <!-- resource point editor modal -->
     <b-modal id="modal-create" size="lg" title="资源点编辑" v-if="editMode">
       <ResoucePointDetail
@@ -26,7 +25,7 @@
         <b-row>
           <!-- 地图 -->
           <div class="col-md square">
-          <MapDrawer :map="item" :clickHandler="mapClickHandler"></MapDrawer>
+            <MapDrawer :map="item" :clickHandler="mapClickHandler"></MapDrawer>
           </div>
           <div class="col-md">
             <!-- ID -->
@@ -45,17 +44,40 @@
               ></b-form-input>
             </b-form-group>
 
-            <!-- 名称 -->
-            <b-form-group id="input-group-1" label="名称:" label-for="input-1">
-              <b-form-input
-                id="input-1"
-                v-model="item.name"
-                type="text"
-                placeholder="输入名称"
-                :disabled="!editMode"
-                required
-              ></b-form-input>
-            </b-form-group>
+            
+            <b-row>
+              <!-- 名称 -->
+              <b-form-group
+                id="input-group-1"
+                label="名称:"
+                label-for="input-1"
+                class="col-md"
+              >
+                <b-form-input
+                  id="input-1"
+                  v-model="item.name"
+                  type="text"
+                  placeholder="输入名称"
+                  :disabled="!editMode"
+                  required
+                ></b-form-input>
+              </b-form-group>
+
+              <!-- 地点选择 -->
+              <b-form-group
+                id="input-group-3"
+                label="属于:"
+                label-for="input-3"
+                class="col-md"
+              >
+                <b-form-select
+                  id="input-3"
+                  v-model="item.location"
+                  :options="locationList.data"
+                  required
+                ></b-form-select>
+              </b-form-group>
+            </b-row>
 
             <!-- 上传图片 -->
             <b-form-group
@@ -74,17 +96,23 @@
               ></b-form-file>
             </b-form-group>
 
-            
             <b-row class="mb-2">
               <!-- 添加资源点 -->
-            <b-button variant="primary" class="col-md" v-b-modal.modal-create v-if="editMode"
-              >添加资源点</b-button
-            >
+              <b-button
+                variant="primary"
+                class="col-md"
+                v-b-modal.modal-create
+                v-if="editMode"
+                >添加资源点</b-button
+              >
               <!-- 删除资源坐标 -->
-              <b-button variant="danger" class="col-md" @click="selectedIndex=null" v-if="editMode"
-              >删除资源坐标</b-button
-            >
-            
+              <b-button
+                variant="danger"
+                class="col-md"
+                @click="selectedIndex = null"
+                v-if="editMode"
+                >删除资源坐标</b-button
+              >
             </b-row>
 
             <!-- 资源显示 -->
@@ -94,11 +122,11 @@
             >
               <ResourcePointCard
                 :resourcePoint="item.resourcePoints[resPointIndex]"
-                :color="'yellow'"       
+                :color="'yellow'"
                 :resPointIndex="resPointIndex"
-                :resourcePointArray = "item.resourcePoints"  
-                :onSelectRP = "onSelectRP"
-                :selectedIndex = "selectedIndex"
+                :resourcePointArray="item.resourcePoints"
+                :onSelectRP="onSelectRP"
+                :selectedIndex="selectedIndex"
               ></ResourcePointCard>
             </div>
           </div>
@@ -141,8 +169,9 @@ import { emptyMap } from "@/models/map";
 import { mapActions } from "vuex";
 import ResoucePointDetail from "@/components/ResourcePointDetail";
 import ResourcePointCard from "@/components/ResourcePointCard";
-import { getDeviation } from '@/businesslogic/findDifference.js';
-import MapDrawer from '@/components/MapDrawer'
+import { getDeviation } from "@/businesslogic/findDifference.js";
+import MapDrawer from "@/components/MapDrawer";
+import { db } from "@/main";
 
 export default {
   data() {
@@ -153,13 +182,19 @@ export default {
       lastItem: null,
       photoFile: null,
       resourceIndex: null,
-      selectedIndex:null
+      selectedIndex: null,
+      locationList: [],
     };
   },
   components: {
     ResoucePointDetail,
     ResourcePointCard,
-    MapDrawer
+    MapDrawer,
+  },
+  firestore() {
+    return {
+      locationList: db.collection("misc").doc("locations"),
+    };
   },
   computed: {
     createMode() {
@@ -185,10 +220,13 @@ export default {
       "uploadImage",
     ]),
 
-    localUpdateSource(){
+    localUpdateSource() {
       this.updateSource({
-          deviation:getDeviation(this.getAllResources(this.item), this.getAllResources(this.original)),
-          source:this.item
+        deviation: getDeviation(
+          this.getAllResources(this.item),
+          this.getAllResources(this.original)
+        ),
+        source: this.item,
       });
     },
 
@@ -227,10 +265,9 @@ export default {
           type: this.item.type,
           id: this.item.id,
           file: this.photoFile,
-          callback: () => {
-          },
+          callback: () => {},
         });
-        this.localUpdateSource()
+        this.localUpdateSource();
       });
     },
 
@@ -248,12 +285,11 @@ export default {
     },
 
     onDelete() {
-      this.deleteItem(this.$route.params.id).then(() => {
+      this.deleteItem(this.item).then((r) => {
+        console.log(r);
         this.lastItem = this.item.name;
-        this.item = emptyMap();
-        this.result = "删除";
-        this.$router.push("/items");
-        this.localUpdateSource()
+        this.$router.push("/maps");
+        this.localUpdateSource();
       });
     },
 
@@ -304,30 +340,35 @@ export default {
       this.$bvModal.hide("modal-create");
     },
 
-    deleteResPoint(resPointIndex){
-      this.item.resourcePoints.splice(resPointIndex, 1)
+    deleteResPoint(resPointIndex) {
+      this.item.resourcePoints.splice(resPointIndex, 1);
     },
 
-    onSelectRP(index){
-      if(index==this.selectedIndex){
-        this.selectedIndex=null
-      }else{
-        this.selectedIndex = index
+    onSelectRP(index) {
+      if (index == this.selectedIndex) {
+        this.selectedIndex = null;
+      } else {
+        this.selectedIndex = index;
       }
     },
 
-    getAllResources(item){
-      return item.resourcePoints.flat(3).map(x=>x.pickables).flat(3).map(x=>x.resources).flat(3)
+    getAllResources(item) {
+      return item.resourcePoints
+        .flat(3)
+        .map((x) => x.pickables)
+        .flat(3)
+        .map((x) => x.resources)
+        .flat(3);
     },
 
-    mapClickHandler(percentPos){
-      if(!this.editMode){
-        return
+    mapClickHandler(percentPos) {
+      if (!this.editMode) {
+        return;
       }
-      if(this.selectedIndex == null){
-        return
+      if (this.selectedIndex == null) {
+        return;
       }
-      this.item.resourcePoints[this.selectedIndex].pos.push(percentPos)      
+      this.item.resourcePoints[this.selectedIndex].pos.push(percentPos);
     },
 
     print() {
@@ -342,7 +383,5 @@ export default {
   beforeRouteUpdate() {
     this.initialize();
   },
-
-
 };
 </script>
