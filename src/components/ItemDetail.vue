@@ -51,8 +51,8 @@
             >
               <b-form-select
                 id="input-3"
-                v-model="item.itemType"
-                :options="ItemType"
+                v-model="item.itemTypeIndex"
+                :options="itemTypeOptions"
                 required
                 :disabled="!editMode"
               ></b-form-select>
@@ -71,8 +71,9 @@
             <b-form-group label="属性:" v-slot="{ ariaDescribedby }">
               <b-form-checkbox-group
                 id="checkbox-group-1"
-                v-model="item.elements"
-                :options="['风', '冰', '火', '雷']"
+                v-model="item.elementIndexes"
+                :options="elementOptions"
+                @input= "setElementIndexes"
                 :aria-describedby="ariaDescribedby"
                 name="flavour-1"
                 :disabled="!editMode"
@@ -172,7 +173,7 @@
 
 <script>
 import { mapState } from "vuex";
-import { emptyItem, ItemType } from "@/models/item";
+import { emptyItem } from "@/models/item";
 import { mapActions } from "vuex";
 import Search from "@/components/Search";
 
@@ -182,7 +183,6 @@ export default {
       item: emptyItem(),
       original: emptyItem(),
       result: "",
-      ItemType,
       lastItem: null,
       photoFile: null,
       sources: [],
@@ -195,7 +195,19 @@ export default {
     createMode() {
       return this.$route.params.id == null && this.editMode;
     },
-    ...mapState(["editMode"]),
+    ...mapState(["editMode", "itemTypes", "elements"]),
+
+    elementOptions() {
+      return this.elements.map((value, index) => {
+        return { text: value, value: index};
+      });
+    },
+
+    itemTypeOptions(){
+      return this.itemTypes.map((value, index) => {
+        return { text: value, value: index};
+      });
+    }
   },
 
   watch: {
@@ -240,6 +252,10 @@ export default {
           this.handleUpdate();
         }
       }
+    },
+
+    setElementIndexes(checked){
+      this.item.elementIndexes = checked
     },
 
     handleCreate() {
@@ -321,7 +337,6 @@ export default {
         );
       }
     },
-
   },
 
   created() {

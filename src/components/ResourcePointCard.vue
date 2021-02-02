@@ -31,7 +31,7 @@
           >
             <b-row>
               <div class="col-md-3">
-                {{ pick.tool }}
+                {{ toolTypes[pick.toolTypeIndex] }}
               </div>
               <div class="col-md-3" v-for="j in [0, 1, 2]" :key="j">
                 <router-link v-if="pick.resources[j]" :to="`/${pick.resources[j].type}/${pick.resources[j].id}`">
@@ -77,7 +77,8 @@ export default {
 
   computed:{
     ...mapState([
-      'editMode'
+      'editMode',
+      'toolTypes'
     ]),
 
     resourcePoint(){

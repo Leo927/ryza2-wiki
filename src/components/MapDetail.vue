@@ -73,7 +73,7 @@
                 <b-form-select
                   id="input-3"
                   v-model="item.location"
-                  :options="locationList.data"
+                  :options="settingDoc.locations"
                   required
                 ></b-form-select>
               </b-form-group>
@@ -183,7 +183,7 @@ export default {
       photoFile: null,
       resourceIndex: null,
       selectedIndex: null,
-      locationList: [],
+      settingDoc: [],
     };
   },
   components: {
@@ -193,7 +193,7 @@ export default {
   },
   firestore() {
     return {
-      locationList: db.collection("misc").doc("locations"),
+      settingDoc: db.collection("misc").doc("settings"),
     };
   },
   computed: {

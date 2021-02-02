@@ -12,8 +12,8 @@
           <b-form-radio-group
             id="btn-radios-1"
             button-variant="outline-info"
-            v-model="resourcePoint.pickables[pickIndex].tool"
-            :options="toolTypes"
+            v-model="resourcePoint.pickables[pickIndex].toolTypeIndex"
+            :options="toolTypeOptions"
             :aria-describedby="ariaDescribedby"
             name="radios-btn-default"
             buttons
@@ -124,6 +124,12 @@ export default {
     createMode() {
       return this.index == undefined;
     },
+
+    toolTypeOptions(){
+      return this.toolTypes.map((value, index)=>{
+        return {text:value, value:index}
+      })
+    }
   },
 
   data() {

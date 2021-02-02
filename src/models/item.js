@@ -3,9 +3,9 @@ const baseEmptyItem = {
     id : null,
     sources : [],
     develops : [],
-    itemType : "",
+    itemTypeIndex : 0,
     type : 'item',
-    elements: [],
+    elementIndexes: [],
     photoUrl: ""
 }
 
@@ -15,4 +15,3 @@ export function emptyItem() {
 
 
 
-export const ItemType = Object.freeze({ "道具": "道具", "装备": "装备", "炼制素材": "炼制素材", "采集素材": "采集素材" })

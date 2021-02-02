@@ -45,7 +45,10 @@ new Vue({
 
       if (this.$store.state.admins.length == 0) {
         db.collection('misc').doc('settings').get().then((response) => {
-          this.$store.state.admins = response.data().admins
+          this.$store.state.admins = response.data().admins;
+          this.$store.state.itemTypes = response.data().itemTypes;
+          this.$store.state.toolTypes = response.data().toolTypes;
+          this.$store.state.elements = response.data().elements;
         })
       }
     });

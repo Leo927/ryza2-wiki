@@ -7,7 +7,7 @@
       v-model = "keyword"
       :keyup:enter="search"
     ></b-form-input>
-    <b-table hover :items="items" :fields="fields">
+    <b-table hover :items="itemList" :fields="fields">
       <template #cell(name)="data">
           <router-link :to="`/${data.item.type}/${data.item['.key']}`">{{data.item.name}}</router-link>
       </template>
@@ -17,6 +17,7 @@
 
 <script>
 import { db } from "@/main";
+import {mapState} from 'vuex'
 
 //import { mapState } from 'vuex';
 export default {
@@ -32,6 +33,20 @@ export default {
       keyword:""
     };
   },
+
+
+  computed:{
+    ...mapState([
+      'itemTypes'
+    ]),
+
+    itemList(){
+      return this.items.map((x)=>{
+        return {...x, itemType:this.itemTypes[x.itemTypeIndex]}
+      })
+    }
+  },
+
   methods: {
     search() {},
   },

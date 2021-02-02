@@ -1,5 +1,5 @@
 const baseEmptyItem = {
-    tool:"",
+    toolTypeIndex:0,
     resources:[]
 }
 
