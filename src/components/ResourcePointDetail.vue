@@ -1,7 +1,5 @@
 <template>
   <div class="container">
-    <b-button @click="print">DEBUG</b-button>
-
     <!-- 颜色 -->
     <b-row>
       <b-button class="col-md-6" @click="randomizeColor">随机颜色</b-button>

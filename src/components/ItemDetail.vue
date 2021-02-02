@@ -275,7 +275,7 @@ export default {
     },
 
     onDelete() {
-      this.deleteItem(this.$route.params.id).then(() => {
+      this.deleteItem(this.item).then(() => {
         this.lastItem = this.item.name;
         this.item = emptyItem();
         this.result = "删除";

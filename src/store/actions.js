@@ -21,9 +21,9 @@ export default {
             .doc(payload.id)
             .update(payload);
     },
-    deleteItem(_, id) {
-        return db.collection("item")
-            .doc(id)
+    deleteItem(_, payload) {
+        return db.collection(payload.type)
+            .doc(payload.id)
             .delete();
     },    
 
