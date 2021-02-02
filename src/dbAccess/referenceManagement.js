@@ -18,10 +18,17 @@ export async function updateLink(current, original, source, targetAttr = "source
         e = deviation.pos[index];
 
 
-        response = await getEntry(e)
+        if (!e[targetAttr]) {
+            response = await getEntry(e)
+            e = response.data()
+        }
+
         e = response.data()
         if (!e) {
             throw `Error: cannot find element. e=${e}`;
+        }
+        if (e[targetAttr].find(x => x.id == e.id)) {
+            continue
         }
         e[targetAttr].push(source)
         e = {
@@ -32,12 +39,18 @@ export async function updateLink(current, original, source, targetAttr = "source
         updateEntry(e)
     }
 
+
     for (let index = 0; index < deviation.neg.length; index++) {
         e = deviation.neg[index];
-        response = await getEntry(e)
-        e = response.data()
+        if (!e[targetAttr]) {
+            response = await getEntry(e)
+            e = response.data()
+        }
         if (e == null) {
             throw "Error: cannot find element";
+        }
+        if (e.type == "map") {
+            continue
         }
         if (!e[targetAttr]) {
             throw `Error: e.targetAttr undefined ${e}`

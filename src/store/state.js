@@ -4,5 +4,6 @@ export default{
     admins:[],
     itemTypes:[],
     toolTypes:[],
-    elements:[]
+    elements:[],
+    locations:[]
 }

@@ -44,7 +44,6 @@
               ></b-form-input>
             </b-form-group>
 
-            
             <b-row>
               <!-- 名称 -->
               <b-form-group
@@ -73,7 +72,7 @@
                 <b-form-select
                   id="input-3"
                   v-model="item.location"
-                  :options="settingDoc.locations"
+                  :options="locations"
                   required
                 ></b-form-select>
               </b-form-group>
@@ -169,9 +168,8 @@ import { emptyMap } from "@/models/map";
 import { mapActions } from "vuex";
 import ResoucePointDetail from "@/components/ResourcePointDetail";
 import ResourcePointCard from "@/components/ResourcePointCard";
-import { getDeviation } from "@/helpers/findDifference.js";
 import MapDrawer from "@/components/MapDrawer";
-import { db } from "@/main";
+import { getMap, createMap, updateMap, deleteMap } from "@/dbAccess/map";
 
 export default {
   data() {
@@ -183,7 +181,6 @@ export default {
       photoFile: null,
       resourceIndex: null,
       selectedIndex: null,
-      settingDoc: [],
     };
   },
   components: {
@@ -191,16 +188,16 @@ export default {
     ResourcePointCard,
     MapDrawer,
   },
-  firestore() {
-    return {
-      settingDoc: db.collection("misc").doc("settings"),
-    };
-  },
+
   computed: {
     createMode() {
       return this.$route.params.id == null && this.editMode;
     },
-    ...mapState(["editMode"]),
+    ...mapState(["editMode", "locations"]),
+
+    id(){
+      return this.$route.params.id;
+    }
   },
 
   watch: {
@@ -210,73 +207,22 @@ export default {
   },
 
   methods: {
-    ...mapActions([
-      "addItem",
-      "getItem",
-      "updateItem",
-      "deleteItem",
-      "searchAll",
-      "updateSource",
-      "uploadImage",
-    ]),
-
-    localUpdateSource() {
-      this.updateSource({
-        deviation: getDeviation(
-          this.getAllResources(this.item),
-          this.getAllResources(this.original)
-        ),
-        source: this.item,
-      });
-    },
+    ...mapActions(["searchAll"]),
 
     async onSubmit() {
-      if (this.photoFile != null) {
-        this.uploadImage({
-          type: this.item.type,
-          id: this.item.id,
-          file: this.photoFile,
-          callback: (response) => {
-            response.ref.getDownloadURL().then((url) => {
-              this.item.photoUrl = url;
-              if (this.createMode) {
-                this.handleCreate();
-              } else {
-                this.handleUpdate();
-              }
-            });
-          },
-        });
-      } else {
-        if (this.createMode) {
-          this.handleCreate();
-        } else {
-          this.handleUpdate();
-        }
+      if (!this.editMode) {
+        throw "User submitting while not in edit mode";
       }
-    },
-
-    handleCreate() {
-      this.addItem(this.item).then(() => {
-        this.lastItem = this.item.name;
-        this.result = "创建";
-        this.reset();
-        this.uploadImage({
-          type: this.item.type,
-          id: this.item.id,
-          file: this.photoFile,
-          callback: () => {},
-        });
-        this.localUpdateSource();
-      });
-    },
-
-    handleUpdate() {
-      this.updateItem(this.item).then(() => {
-        this.lastItem = this.item.name;
+      if (this.createMode) {
+        await createMap(this.item, this.photoFile);
+        setTimeout(() => {
+          this.$router.push(`/${this.item.type}/${this.item.id}`);
+        }, 1000);
+      } else if (this.editMode) {
+        await updateMap(this.item, this.original, this.photoFile);
         this.result = "修改";
-        this.localUpdateSource();
-      });
+        this.lastItem = this.item.name;
+      }
     },
 
     reset() {
@@ -284,50 +230,17 @@ export default {
       this.photoFile = null;
     },
 
-    onDelete() {
-      this.deleteItem(this.item).then((r) => {
-        console.log(r);
-        this.lastItem = this.item.name;
-        this.$router.push("/maps");
-        this.localUpdateSource();
-      });
+    async onDelete() {
+      await deleteMap(this.item);
+      this.lastItem = this.item.name;
+      this.$router.push("/maps");
     },
 
-    addSources(source) {
-      source = {
-        id: source.id,
-        type: source.type,
-        name: source.name,
-      };
-      this.item.sources.push(source);
-    },
-
-    deleteSource(index) {
-      this.item.sources.splice(index, 1);
-    },
-
-    addDevelop(develop) {
-      develop = {
-        id: develop.id,
-        type: develop.type,
-        name: develop.name,
-      };
-      this.item.develops.push(develop);
-    },
-
-    deleteDevelop(index) {
-      this.item.develops.splice(index, 1);
-    },
-
-    initialize() {
-      if (this.$route.params.id) {
-        this.getItem({ type: "map", id: this.$route.params.id }).then(
-          (response) => {
-            this.item = response.data();
-            this.item.id = this.$route.params.id;
-            this.original = JSON.parse(JSON.stringify(this.item));
-          }
-        );
+    async initialize() {
+      if (this.id) {
+        const response = await getMap(this.id);
+        this.item = response.data()
+        this.original = JSON.parse(JSON.stringify(this.item));
       }
     },
 

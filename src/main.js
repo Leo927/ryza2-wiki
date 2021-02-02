@@ -49,6 +49,7 @@ new Vue({
           this.$store.state.itemTypes = response.data().itemTypes;
           this.$store.state.toolTypes = response.data().toolTypes;
           this.$store.state.elements = response.data().elements;
+          this.$store.state.locations = response.data().locations;
         })
       }
     });
