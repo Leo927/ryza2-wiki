@@ -169,7 +169,7 @@ import { emptyMap } from "@/models/map";
 import { mapActions } from "vuex";
 import ResoucePointDetail from "@/components/ResourcePointDetail";
 import ResourcePointCard from "@/components/ResourcePointCard";
-import { getDeviation } from "@/businesslogic/findDifference.js";
+import { getDeviation } from "@/helpers/findDifference.js";
 import MapDrawer from "@/components/MapDrawer";
 import { db } from "@/main";
 

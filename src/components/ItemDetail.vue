@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-row>
+    <b-row v-if="item">
       <b-col md="9 mx-auto">
         <div
           class="text-success text-center"
@@ -13,7 +13,9 @@
           <img
             class="col-md-3"
             :src="
-              item.photoUrl ? item.photoUrl : 'https://via.placeholder.com/150'
+              item && item.photoUrl
+                ? item.photoUrl
+                : 'https://via.placeholder.com/150'
             "
             alt=""
             style="height: 100%"
@@ -73,7 +75,7 @@
                 id="checkbox-group-1"
                 v-model="item.elementIndexes"
                 :options="elementOptions"
-                @input= "setElementIndexes"
+                @input="setElementIndexes"
                 :aria-describedby="ariaDescribedby"
                 name="flavour-1"
                 :disabled="!editMode"
@@ -176,6 +178,7 @@ import { mapState } from "vuex";
 import { emptyItem } from "@/models/item";
 import { mapActions } from "vuex";
 import Search from "@/components/Search";
+import { createItem, getItem, deleteItem, updateItem } from '@/dbAccess/item';
 
 export default {
   data() {
@@ -185,7 +188,7 @@ export default {
       result: "",
       lastItem: null,
       photoFile: null,
-      sources: [],
+      sources: [],      
     };
   },
   components: {
@@ -199,90 +202,52 @@ export default {
 
     elementOptions() {
       return this.elements.map((value, index) => {
-        return { text: value, value: index};
+        return { text: value, value: index };
       });
     },
 
-    itemTypeOptions(){
+    itemTypeOptions() {
       return this.itemTypes.map((value, index) => {
-        return { text: value, value: index};
+        return { text: value, value: index };
       });
+    },
+
+    id(){
+      return this.$route.params.id;
     }
   },
 
   watch: {
-    "$route.path": function () {
+    id: function () {
       this.initialize();
     },
   },
 
   methods: {
     ...mapActions([
-      "addItem",
-      "getItem",
-      "updateItem",
-      "deleteItem",
       "searchAll",
       "updateDifferences",
-      "uploadImage",
     ]),
 
     async onSubmit() {
-      if (this.photoFile != null) {
-        this.uploadImage({
-          type: this.item.type,
-          id: this.item.id,
-          file: this.photoFile,
-          callback: (response) => {
-            console.log(response.ref);
-            response.ref.getDownloadURL().then((url) => {
-              this.item.photoUrl = url;
-              if (this.createMode) {
-                this.handleCreate();
-              } else {
-                this.handleUpdate();
-              }
-            });
-          },
-        });
-      } else {
-        if (this.createMode) {
-          this.handleCreate();
-        } else {
-          this.handleUpdate();
-        }
+      if(!this.editMode){
+        throw 'User submitting while not in edit mode'
+      }
+      if(this.createMode){
+        await createItem(this.item, this.photoFile)
+        setTimeout(() => {
+          this.$router.push(`/${this.item.type}/${this.item.id}`)
+        }, 1000);        
+
+      }else if(this.editMode){
+        await updateItem(this.item, this.original, this.photoFile)
+        this.result= "修改"
+        this.lastItem = this.item.name
       }
     },
 
-    setElementIndexes(checked){
-      this.item.elementIndexes = checked
-    },
-
-    handleCreate() {
-      this.addItem(this.item).then(() => {
-        this.lastItem = this.item.name;
-        this.result = "创建";
-        this.reset();
-        this.uploadImage({
-          type: this.item.type,
-          id: this.item.id,
-          file: this.photoFile,
-          callback: (response) => {
-            console.log(response);
-          },
-        });
-      });
-    },
-
-    handleUpdate() {
-      this.updateItem(this.item).then(() => {
-        this.lastItem = this.item.name;
-        this.result = "修改";
-        this.updateDifferences({
-          current: this.item,
-          original: this.original,
-        });
-      });
+    setElementIndexes(checked) {
+      this.item.elementIndexes = checked;
     },
 
     reset() {
@@ -290,14 +255,9 @@ export default {
       this.photoFile = null;
     },
 
-    onDelete() {
-      this.deleteItem(this.item).then(() => {
-        this.lastItem = this.item.name;
-        this.item = emptyItem();
-        this.result = "删除";
-        this.$router.push("/items");
-        this.updateDifferences({ current: this.item, original: this.original });
-      });
+    async onDelete() {
+      await deleteItem(this.item)
+      this.$router.push("/items");
     },
 
     addSources(source) {
@@ -326,24 +286,16 @@ export default {
       this.item.develops.splice(index, 1);
     },
 
-    initialize() {
-      if (this.$route.params.id) {
-        this.getItem({ type: "item", id: this.$route.params.id }).then(
-          (response) => {
-            this.item = response.data();
-            this.item.id = this.$route.params.id;
-            this.original = JSON.parse(JSON.stringify(this.item));
-          }
-        );
+    async initialize() {
+      if (this.id) {
+        const response = await getItem(this.id);
+        this.item = response.data()
+        this.original = JSON.parse(JSON.stringify(this.item));
       }
     },
   },
 
   created() {
-    this.initialize();
-  },
-
-  beforeRouteUpdate() {
     this.initialize();
   },
 };
