@@ -1,3 +1,5 @@
+import firebase from 'firebase/app'
+import 'firebase/firestore'
 import {getAllResourcesFromMap} from '@/helpers/map';
 import {db} from '@/main';
 import { addEntry, getEntry, deleteEntry } from './firestore';
@@ -76,4 +78,27 @@ export function updateMapLinks( current, original) {
         throw `Argument error in updateMapLinks. current:${current}, original:${original}`
     }
     updateLink(getAllResourcesFromMap(current), getAllResourcesFromMap(original), current, 'sources')
+}
+
+export async function addMapIndex(map){
+    await db.collection(TYPE).doc('index').update({
+        mapArray: firebase.firestore.FieldValue.arrayUnion({name:map.name, id:map.id, type:map.type})
+    });
+}
+
+export async function removeMapIndex(map){    
+    await db.collection(TYPE).doc('index').update({
+        mapArray: firebase.firestore.FieldValue.arrayRemove({name:map.name, id:map.id, type:map.type})
+    });
+}
+
+
+
+export async function reIndexMaps(){
+    const response = await db.collection(TYPE).where('id','!=','null').get();
+    const mapArray = response.docs.map(x=>x.data()).map((x=>{
+        return {name:x.name, id:x.id, type:x.type}
+    }));
+    var data = {'mapArray':mapArray}
+    await db.collection(TYPE).doc('index').set(data)
 }

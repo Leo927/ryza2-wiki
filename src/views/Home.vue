@@ -4,24 +4,22 @@
 
     <b-row>
       <b-col class="col-md-6 mx-auto">
-        <Search
+        <l-v-search
+          name="search"
           class="mx-auto"
-          :collections="['item', 'monster', 'pickable']"
-          :onEnter="directToDetail"
-        ></Search>
+          :collections="['items', 'monsters', 'pickables', 'maps']"
+        ></l-v-search>
       </b-col>
     </b-row>
   </div>
 </template>
 
 <script>
-import Search from "@/components/Search";
 // @ is an alias to /src
 
 export default {
   name: "Home",
   components: {
-    Search,
   },
   methods: {
     directToDetail(source) {

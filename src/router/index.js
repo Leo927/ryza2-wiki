@@ -6,9 +6,14 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/',
+    path: '/dashboard',
     name: '主页',
     component: Home
+  },
+  {
+    path: '/',
+    redirect: 'dashboard'
+    
   },
   {
     path: '/items',
@@ -65,6 +70,14 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../components/MapDetail.vue')
+  },
+  {
+    path: '/config',
+    name: '管理',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../components/Config.vue')
   },
 ]
 

@@ -1,49 +1,45 @@
 <template>
-  <div width="100%">
-    <b-form-input
-      list="my-list-id"
-      v-model="keyword"
-      placeholder="搜索"
-      width="100%"
-      :class="{'border-danger':error}"
-      v-on:keyup.enter.prevent.stop="onSearch()"
-    ></b-form-input>
+  <div>
+    <v-select
+      :value="keyword"
+      @input="clickOption"
+      :options="options"
+      label="name"
+    >
+    </v-select>
   </div>
 </template>
 
 <script>
-import { mapActions } from "vuex";
-
+import router from "../router";
 
 export default {
   props: {
     collections: Array,
-    onEnter: Function,
+    onSelectOption: {
+      type: Function,
+      default: (value) => {
+        router.push(`/${value.type}/${value.id}`);
+      },
+    },
   },
 
   data() {
     return {
       keyword: "",
-      options: [],
-      error: false
+      error: false,
     };
   },
 
   methods: {
-    ...mapActions(["search"]),
-    async onSearch() {
-      const data = await this.search({
-        keyword: this.keyword,
-        collections: this.collections,
-      });
-      this.options = data;
-      if (data.length == 0) {
-        this.error=true;
-        return;
-      }
-      this.error=false;
-      this.onEnter(data[0]);
-      this.keyword ="";
+    clickOption(value) {
+      this.onSelectOption(value);
+    },
+  },
+
+  computed: {
+    options() {
+      return this.collections.map((x) => this.$store.state[x]).flat(3)
     },
   },
 };

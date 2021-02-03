@@ -10,6 +10,10 @@ import 'firebase/storage'
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import vSelect from 'vue-select'
+import 'vue-select/dist/vue-select.css';
+import Search from '@/components/Search';
+
 
 
 const firebaseConfig = {
@@ -26,7 +30,8 @@ export const storageRef = firebase.storage().ref();
 export const db = firebase.firestore()
 
 Vue.use(VueFirestore)
-
+Vue.component('l-v-search', Search)
+Vue.component('v-select', vSelect)
 
 // Make BootstrapVue available throughout your project
 Vue.use(BootstrapVue)
@@ -39,12 +44,19 @@ new Vue({
   router,
   store,
   created() {
-    this.$store.dispatch('updateSetting')
+
+    db.collection("misc").doc("settings")
+    .onSnapshot((response) => {
+      this.$store.state.itemTypes = response.data().itemTypes;
+      this.$store.state.toolTypes = response.data().toolTypes;
+      this.$store.state.elements = response.data().elements;
+      this.$store.state.locations = response.data().locations;
+      this.$store.state.attributes = response.data().attributes; 
+      this.$store.state.admins = response.data().admins; 
+    });
 
     firebase.auth().onAuthStateChanged((user) => {
       this.$store.state.uid = user ? user.uid : null
-
-      this.$store.dispatch('updateSetting');
     });
 
     db.collection("item").doc("index")

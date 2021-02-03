@@ -14,6 +14,7 @@ export default {
             state.toolTypes = response.data().toolTypes;
             state.elements = response.data().elements;
             state.locations = response.data().locations;
+            state.attributes = response.data().attributes; 
         })
     },
 

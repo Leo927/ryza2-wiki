@@ -1,7 +1,7 @@
 <template>
   <b-container>
     <!-- resource point editor modal -->
-    <b-modal id="modal-create" size="lg" title="资源点编辑" v-if="editMode">
+    <b-modal id="modal-create" size="lg" title="资源点编辑" v-if="editMode" no-close-on-backdrop>
       <ResoucePointDetail
         name="create"
         :onSubmit="onSubmitResourcePoint"

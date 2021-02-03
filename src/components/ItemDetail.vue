@@ -90,7 +90,7 @@
           <div class="col-md">
             <h3 class="text-center">来源</h3>
             <div v-if="editMode">
-              <Search :collections="['item']" :onEnter="addSources"></Search>
+              <Search :collections="['items']" :onSelectOption="addSources"></Search>
             </div>
             <div>
               <b-table
@@ -119,7 +119,7 @@
           <div class="col-md">
             <h3 class="text-center">改变</h3>
             <div v-if="editMode">
-              <Search :collections="['item']" :onEnter="addDevelop"></Search>
+              <Search :collections="['items']" :onSelectOption="addDevelop"></Search>
             </div>
             <div>
               <b-table

@@ -25,14 +25,15 @@
       <b-row>
         <!-- 搜索 -->
         <b-col md>
-          <Search
-            :collections="['item']"
-            :onEnter="
+          <l-v-search
+            :name="`resource-edit-search-${index}`"
+            :collections="['items']"
+            :onSelectOption="
               (data) => {
                 resourcePoint.pickables[pickIndex].resources.push(data);
               }
             "
-          ></Search>
+          ></l-v-search>
         </b-col>
 
         <!-- 资源列表 -->
@@ -104,7 +105,6 @@
 import { emptyResoucePoint } from "@/models/resourcePoint";
 import { emptyPickable } from "@/models/pickable";
 import { mapState } from "vuex";
-import Search from "@/components/Search";
 
 export default {
   props: {
@@ -115,7 +115,6 @@ export default {
   },
 
   components: {
-    Search,
   },
 
   computed: {

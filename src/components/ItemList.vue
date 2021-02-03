@@ -1,22 +1,18 @@
 <template>
   <div class="col-md-6 mx-auto">
     <b-row>
-    <b-table hover :items="itemList" :fields="fields">
-      <template #cell(name)="data">
-        <router-link :to="`/${data.item.type}/${data.item.id}`">{{
-          data.item.name
-        }}</router-link>
-      </template>
-    </b-table>
+      <div class="col-12">
+        <l-v-search name="search" :collections="['items']" :onSelect="directToDetail"></l-v-search>
+      </div>
     </b-row>
-
-<b-row>
-    <b-button class="col-md col-12" @click="getPreviousPage" variant="outline-info">
-      <i class="fas fa-arrow-left"></i>
-    </b-button>
-    <b-button class="col-md col-12" @click="getNextPage" variant="outline-info">
-      <i class="fas fa-arrow-right"></i>
-    </b-button>
+    <b-row>
+      <b-table hover :items="itemList" :fields="fields">
+        <template #cell(name)="data">
+          <router-link :to="`/${data.item.type}/${data.item.id}`">{{
+            data.item.name
+          }}</router-link>
+        </template>
+      </b-table>
     </b-row>
   </div>
 </template>
@@ -34,8 +30,11 @@ export default {
     };
   },
 
+  components: {
+  },
+
   computed: {
-    ...mapState(["itemTypes", 'items']),
+    ...mapState(["itemTypes", "items"]),
 
     itemList() {
       return this.items.map((x) => {
@@ -49,16 +48,9 @@ export default {
   },
 
   methods: {
-    search() {},
-
-    initialize() {
-      this.getNextPage()
+    directToDetail(source) {
+      this.$router.push(`/${source.type}/${source.id}`);
     },
-
   },
-
-  created(){
-    this.initialize();
-  }
 };
 </script>

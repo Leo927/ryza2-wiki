@@ -25,14 +25,19 @@
           <b-nav-item to="/maps">地图</b-nav-item>
         </b-navbar-nav>
 
+        <b-navbar-nav v-if="isAdmin">
+          <b-nav-item to="/config">后台</b-nav-item>
+        </b-navbar-nav>
+
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
-          <b-col>
-            <Search
-            :collections="['item','monster','pickable']"
-            :onEnter="directToDetail"
-            ></Search>
-            </b-col>
+          <b-col style="min-width:300px">
+            <l-v-search
+            name="search"
+              class="mx-auto"
+              :collections="['items', 'monsters', 'pickables', 'maps']"
+            ></l-v-search>
+          </b-col>
           <b-form-checkbox
             v-if="isAdmin"
             class="my-auto mx-5"
@@ -71,7 +76,6 @@
 import * as firebaseui from "firebaseui";
 import firebase from "firebase/app";
 import { mapActions, mapState, mapGetters } from "vuex";
-import Search from '@/components/Search'
 
 export default {
   computed: {
@@ -89,8 +93,7 @@ export default {
     },
   },
 
-  components:{
-    Search
+  components: {
   },
 
   data() {
@@ -123,7 +126,7 @@ export default {
       this.loginUI.start("#firebaseui-auth-container", uiConfig);
     },
 
-    directToDetail(source){
+    directToDetail(source) {
       this.$router.push(`/${source.type}/${source.id}`);
     },
 

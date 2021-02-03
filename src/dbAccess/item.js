@@ -85,12 +85,25 @@ export function updateItemLinks( current, original) {
 
 export async function addItemIndex(item){
     await db.collection(TYPE).doc('index').update({
-        itemArray: firebase.firestore.FieldValue.arrayUnion({name:item.name, id:item.id, type:item.type})
+        itemArray: firebase.firestore.FieldValue.arrayUnion(getItemIndex(item))
     });
 }
 
 export async function removeItemIndex(item){    
     await db.collection(TYPE).doc('index').update({
-        itemArray: firebase.firestore.FieldValue.arrayRemove({name:item.name, id:item.id, type:item.type})
+        itemArray: firebase.firestore.FieldValue.arrayRemove(getItemIndex(item))
     });
+}
+
+function getItemIndex(x){
+    return {name:x.name, id:x.id, type:x.type, itemTypeIndex: x.itemTypeIndex, elementIndexes:x.elementIndexes}
+}
+
+export async function reIndexItems(){
+    const response = await db.collection(TYPE).where('id','!=','null').get();
+    const itemArray = response.docs.map(x=>x.data()).map((x=>{
+        return getItemIndex(x)
+    }));
+    var data = {'itemArray':itemArray}
+    await db.collection(TYPE).doc('index').set(data)
 }
