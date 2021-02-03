@@ -28,12 +28,7 @@
       </b-form-group>
       
       <b-form-group id="input-group-3" class="col-md" label="属性:" label-for="input-3">
-        <b-form-select
-          id="input-3"
-          v-model="filterAttribute"
-          :options="attributes"
-          required
-        ></b-form-select>
+        <l-v-search :collections="['attributes']" :onSelectOption="(value)=>{filterAttribute=value}"></l-v-search>
       </b-form-group>
     </b-row>
     <b-row>

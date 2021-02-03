@@ -40,13 +40,47 @@ export default {
 
     pinyinFilter(array, keyword) {
       return array.filter((value) => {
-        if (!value || !value.name) {
+        if (!value) {
           return false;
         }
-        var py = pinyin
+
+        var py
+        if (typeof value === "string") {
+          // value contains keyword check chinese against chinese
+          if (value.includes(keyword)) {
+            return true;
+          }
+
+          // value contains keyword check pinyin
+          py = pinyin
+            .parse(value)
+            .map((x) => x.target)
+            .join("")
+            .toLowerCase();
+          if (py.includes(keyword.toLowerCase())) {
+            return true;
+          }
+        }
+
+        if (!value.name) {
+          return false;
+        }
+        if(typeof value.name != 'string'){
+          return false
+        }
+
+        //check against orignal chinese
+        if (value.name.includes(keyword)) {
+          return true;
+        }
+
+
+        //check pinyin
+        py = pinyin
           .parse(value.name)
           .map((x) => x.target)
-          .join("").toLowerCase();
+          .join("")
+          .toLowerCase();
         var isIncluded = py.includes(keyword.toLowerCase());
         return isIncluded;
       });

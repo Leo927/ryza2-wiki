@@ -262,15 +262,15 @@ export default {
       }
       if (this.createMode) {
         await createItem(this.item, this.photoFile);
-        this.result = "创建";
+        
         this.lastItem = this.item.name;
-        this.item = emptyItem();
-        this.photoFile = null;
+        this.initialize()
+        this.result = "创建";
       } else if (this.editMode) {
         await updateItem(this.item, this.original, this.photoFile);
+        
+        this.initialize()
         this.result = "修改";
-        this.lastItem = this.item.name;
-        this.photoFile = null;
       }
     },
 
@@ -320,10 +320,10 @@ export default {
         this.item = this.checkAttributes(response.data());
         this.original = JSON.parse(JSON.stringify(this.item));
         this.photoFile = null;
-        this.result = "";
       }else{
         this.item.itemTypeIndex = this.defaultItemTypeIndex
       }
+      this.result = "";
     },
 
     checkAttributes(item){

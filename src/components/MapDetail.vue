@@ -69,12 +69,7 @@
                 label-for="input-3"
                 class="col-md"
               >
-                <b-form-select
-                  id="input-3"
-                  v-model="item.location"
-                  :options="locations"
-                  required
-                ></b-form-select>
+               <l-v-search :collections="['locations']" :onSelectOption="(value)=>{item.location=value}"></l-v-search>
               </b-form-group>
             </b-row>
 
