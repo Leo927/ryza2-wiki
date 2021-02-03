@@ -12,7 +12,7 @@
       <hr />
       <h5>物品属性</h5>
       <b-row class="mb-3">
-        <b-input v-model="attribute" class="col-sm"></b-input>
+        <b-input v-model="attribute" class="col-sm" @keyup.enter.stop.prevent="addAttribute"></b-input>
         <b-button class="col-sm" @click="addAttribute"
           >添加</b-button
         >

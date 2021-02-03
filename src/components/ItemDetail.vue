@@ -9,8 +9,6 @@
           {{ lastItem }} {{ result }}成功
         </div>
 
-        <b-button v-if="true" @click="addItemIndex">DEBUG</b-button>
-
         <b-row>
           <img
             class="col-md-3"
@@ -86,11 +84,36 @@
           </div>
         </b-row>
 
+        <l-v-search v-if="editMode"
+          :collections="['attributes']"
+          :onSelectOption="addAttribute"
+        ></l-v-search>
+        <!-- 物品属性列表 -->
+        <b-container>
+          <b-row>
+            <div
+              class="card col-md-2"
+              v-for="(attr, attrIndex) in this.item.attributes"
+              :key="attrIndex"
+            >
+              <div >
+                <h5 class="card-title text-center">{{ attr }}</h5>
+                <b-button class="col-md" @click="removeAttribute(attrIndex)" v-if="editMode">
+                  删除
+                </b-button>
+              </div>
+            </div>
+          </b-row>
+        </b-container>
+
         <b-row class="mb-3">
           <div class="col-md">
             <h3 class="text-center">来源</h3>
             <div v-if="editMode">
-              <Search :collections="['items']" :onSelectOption="addSources"></Search>
+              <l-v-search
+                :collections="['items']"
+                :onSelectOption="addSources"
+              ></l-v-search>
             </div>
             <div>
               <b-table
@@ -119,7 +142,10 @@
           <div class="col-md">
             <h3 class="text-center">改变</h3>
             <div v-if="editMode">
-              <Search :collections="['items']" :onSelectOption="addDevelop"></Search>
+              <l-v-search
+                :collections="['items']"
+                :onSelectOption="addDevelop"
+              ></l-v-search>
             </div>
             <div>
               <b-table
@@ -179,8 +205,12 @@
 import { mapState } from "vuex";
 import { emptyItem } from "@/models/item";
 import { mapActions } from "vuex";
-import Search from "@/components/Search";
-import { createItem, getItem, deleteItem, updateItem, addItemIndex } from '@/dbAccess/item';
+import {
+  createItem,
+  getItem,
+  deleteItem,
+  updateItem,
+} from "@/dbAccess/item";
 
 export default {
   data() {
@@ -190,17 +220,15 @@ export default {
       result: "",
       lastItem: null,
       photoFile: null,
-      sources: [],      
+      sources: [],
     };
   },
-  components: {
-    Search,
-  },
+  components: {},
   computed: {
     createMode() {
       return this.$route.params.id == null && this.editMode;
     },
-    ...mapState(["editMode", "itemTypes", "elements"]),
+    ...mapState(["editMode", "itemTypes", "elements", "attributes"]),
 
     elementOptions() {
       return this.elements.map((value, index) => {
@@ -214,9 +242,9 @@ export default {
       });
     },
 
-    id(){
+    id() {
       return this.$route.params.id;
-    }
+    },
   },
 
   watch: {
@@ -226,27 +254,21 @@ export default {
   },
 
   methods: {
-    ...mapActions([
-      "searchAll",
-      "updateDifferences",
-    ]),
-
-    addItemIndex(){addItemIndex(this.item)},
+    ...mapActions(["searchAll", "updateDifferences"]),
 
     async onSubmit() {
-      if(!this.editMode){
-        throw 'User submitting while not in edit mode'
+      if (!this.editMode) {
+        throw "User submitting while not in edit mode";
       }
-      if(this.createMode){
-        await createItem(this.item, this.photoFile)
-        this.result= "修改";
+      if (this.createMode) {
+        await createItem(this.item, this.photoFile);
+        this.result = "修改";
         this.lastItem = this.item.name;
         this.item = emptyItem();
-
-      }else if(this.editMode){
-        await updateItem(this.item, this.original, this.photoFile)
-        this.result= "修改"
-        this.lastItem = this.item.name
+      } else if (this.editMode) {
+        await updateItem(this.item, this.original, this.photoFile);
+        this.result = "修改";
+        this.lastItem = this.item.name;
       }
     },
 
@@ -260,7 +282,7 @@ export default {
     },
 
     async onDelete() {
-      await deleteItem(this.item)
+      await deleteItem(this.item);
       this.$router.push("/items");
     },
 
@@ -293,11 +315,23 @@ export default {
     async initialize() {
       if (this.id) {
         const response = await getItem(this.id);
-        this.item = response.data()
+        this.item = this.checkAttributes(response.data());
         this.original = JSON.parse(JSON.stringify(this.item));
         this.photoFile = null;
         this.result = "";
       }
+    },
+
+    checkAttributes(item){
+      return item.attributes?item:{...item, attributes:[]}
+    },
+
+    addAttribute(item) {
+      this.item.attributes.push(item);
+    },
+
+    removeAttribute(attrIndex) {
+      this.item.attributes.splice(attrIndex, 1);
     },
   },
 

@@ -49,14 +49,14 @@ export async function deleteItem(item) {
     }
     updateItemLinks(emptyItem(), item)
     removeItemIndex(item)
-    return deleteEntry(item)    
+    return deleteEntry(item)
 }
 
 export function getItem(id) {
     if (!id) {
         throw "id is undefined when getting item"
     }
-
+    
     return getEntry({ type: TYPE, id })
 }
 
@@ -72,6 +72,8 @@ export function updateItem(item, original, photoFile){
     }
     var ref = db.collection(TYPE).doc(item.id)
     updateItemLinks(item, original)
+    removeItemIndex(original)
+    addItemIndex(item)
     return setItem(item, photoFile, ref)
 }
 

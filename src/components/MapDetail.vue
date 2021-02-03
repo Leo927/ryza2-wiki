@@ -95,10 +95,11 @@
               ></b-form-file>
             </b-form-group>
 
+<b-container>
             <b-row class="mb-2">
               <!-- 添加资源点 -->
               <b-button
-                variant="primary"
+                variant="outline-primary"
                 class="col-md"
                 v-b-modal.modal-create
                 v-if="editMode"
@@ -106,13 +107,14 @@
               >
               <!-- 删除资源坐标 -->
               <b-button
-                variant="danger"
+                variant="outline-danger"
                 class="col-md"
                 @click="selectedIndex = null"
                 v-if="editMode"
                 >删除资源坐标</b-button
               >
             </b-row>
+            </b-container>
 
             <!-- 资源显示 -->
             <div
@@ -132,19 +134,20 @@
         </b-row>
 
         <!-- 按钮 -->
+        <b-container>
         <b-row class="mt-3">
           <b-button
             v-if="editMode"
             class="col-md"
             @click="onSubmit"
-            variant="primary"
+            variant="outline-primary"
             >提交</b-button
           >
           <b-button
             v-if="createMode"
             class="col-md"
             @click="reset"
-            variant="danger"
+            variant="outline-danger"
             >清空</b-button
           >
           <b-button
@@ -152,10 +155,11 @@
             col
             class="col-md"
             @click="onDelete"
-            variant="danger"
+            variant="outline-danger"
             >删除</b-button
           >
         </b-row>
+        </b-container>
       </b-col>
     </b-row>
   </b-container>

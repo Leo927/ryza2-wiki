@@ -16,7 +16,7 @@
         <span></span>
       </template>
     </b-modal>
-
+    <b-container class="rounded border border-info">
     <b-row>
       <!-- 颜色 -->
       <div class="col-md-1 my-auto" :class="{'btn-primary':resPointIndex==selectedIndex, 'btn':editMode}" @click="onClickColor">
@@ -54,6 +54,7 @@
       </b-col>
 
     </b-row>
+    </b-container>
   </div>
 </template>
 

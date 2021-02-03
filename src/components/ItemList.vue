@@ -6,13 +6,15 @@
       </div>
     </b-row>
     <b-row>
-      <b-table hover :items="itemList" :fields="fields">
+      <b-pagination v-model="currentPage" :total-rows="itemList.length" :per-page="10" aria-controls="item-table" class="mx-auto"></b-pagination>
+      <b-table id="item-table" hover :items="itemList" :fields="fields" per-page="10" :current-page="currentPage">
         <template #cell(name)="data">
           <router-link :to="`/${data.item.type}/${data.item.id}`">{{
             data.item.name
           }}</router-link>
         </template>
       </b-table>
+      
     </b-row>
   </div>
 </template>
@@ -24,9 +26,20 @@ const dataLimit = 10;
 export default {
   data() {
     return {
-      fields: ["name", "itemType"],
       keyword: "",
-      startAt: 0,
+
+      currentPage: 1,
+
+      fields: [
+          {
+            key: 'name',
+            sortable: true
+          },
+          {
+            key: 'itemType',
+            sortable: true
+          }
+        ],
     };
   },
 
