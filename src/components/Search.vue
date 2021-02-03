@@ -1,10 +1,10 @@
 <template>
-  <div class="row">
+  <div width="100%">
     <b-form-input
       list="my-list-id"
       v-model="keyword"
       placeholder="搜索"
-      class="border-5"
+      width="100%"
       :class="{'border-danger':error}"
       v-on:keyup.enter.prevent.stop="onSearch()"
     ></b-form-input>

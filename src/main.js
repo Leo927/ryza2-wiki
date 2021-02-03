@@ -5,7 +5,6 @@ import store from './store'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import firebase from 'firebase/app'
 import VueFirestore from 'vue-firestore'
-
 import 'firebase/firestore'
 import 'firebase/storage'
 // Import Bootstrap an BootstrapVue CSS files (order is important)
@@ -43,15 +42,7 @@ new Vue({
     firebase.auth().onAuthStateChanged((user) => {
       this.$store.state.uid = user ? user.uid : null
 
-      if (this.$store.state.admins.length == 0) {
-        db.collection('misc').doc('settings').get().then((response) => {
-          this.$store.state.admins = response.data().admins;
-          this.$store.state.itemTypes = response.data().itemTypes;
-          this.$store.state.toolTypes = response.data().toolTypes;
-          this.$store.state.elements = response.data().elements;
-          this.$store.state.locations = response.data().locations;
-        })
-      }
+      this.$store.dispatch('updateSetting');
     });
 
 
