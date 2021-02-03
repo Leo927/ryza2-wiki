@@ -98,7 +98,10 @@ export async function removeItemIndex(item){
 }
 
 function getItemIndex(x){
-    return {name:x.name, id:x.id, type:x.type, itemTypeIndex: x.itemTypeIndex, elementIndexes:x.elementIndexes}
+    if(!x.attributes){
+        x.attributes = []
+    }
+    return {name:x.name, id:x.id, type:x.type, itemTypeIndex: x.itemTypeIndex, elementIndexes:x.elementIndexes, attributes:x.attributes}
 }
 
 export async function reIndexItems(){

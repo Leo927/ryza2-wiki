@@ -1,20 +1,48 @@
 <template>
   <div class="col-md-6 mx-auto">
     <b-row>
-      <div class="col-12">
-        <l-v-search name="search" :collections="['items']" :onSelect="directToDetail"></l-v-search>
-      </div>
+      <b-pagination
+        v-model="currentPage"
+        :total-rows="itemList.length"
+        :per-page="10"
+        aria-controls="item-table"
+        class="mx-auto"
+      ></b-pagination>
     </b-row>
     <b-row>
-      <b-pagination v-model="currentPage" :total-rows="itemList.length" :per-page="10" aria-controls="item-table" class="mx-auto"></b-pagination>
-      <b-table id="item-table" hover :items="itemList" :fields="fields" per-page="10" :current-page="currentPage">
+      <b-form-group id="input-group-3" class="col-md" label="五行" label-for="input-3">
+        <b-form-select
+          id="input-3"
+          v-model="filterElement"
+          :options="elements"
+          required
+        ></b-form-select>
+      </b-form-group>
+      <b-form-group id="input-group-3" class="col-md" label="属性:" label-for="input-3">
+        <b-form-select
+          id="input-3"
+          v-model="filterAttribute"
+          :options="attributes"
+          required
+        ></b-form-select>
+      </b-form-group>
+    </b-row>
+    <b-row>
+      <b-table
+        id="item-table"
+        hover
+        :items="itemList"
+        :fields="fields"
+        sort-by="name"
+        per-page="10"
+        :current-page="currentPage"
+      >
         <template #cell(name)="data">
           <router-link :to="`/${data.item.type}/${data.item.id}`">{{
             data.item.name
           }}</router-link>
         </template>
       </b-table>
-      
     </b-row>
   </div>
 </template>
@@ -28,31 +56,49 @@ export default {
     return {
       keyword: "",
 
+      filterElement: null,
+
+      filterAttribute: null,
+
       currentPage: 1,
 
       fields: [
-          {
-            key: 'name',
-            sortable: true
-          },
-          {
-            key: 'itemType',
-            sortable: true
-          }
-        ],
+        {
+          key: "name",
+          sortable: true,
+        },
+        {
+          key: "itemType",
+          sortable: true,
+        },
+      ],
     };
   },
 
-  components: {
-  },
+  components: {},
 
   computed: {
-    ...mapState(["itemTypes", "items"]),
+    ...mapState(["itemTypes", "items", "attributes", "elements"]),
 
     itemList() {
-      return this.items.map((x) => {
+      var rawItemList = this.items.map((x) => {
         return { ...x, itemType: this.itemTypes[x.itemTypeIndex] };
       });
+      if (!this.filterAttribute || !this.filterElement) {
+
+        return rawItemList;
+
+      } else {
+        return rawItemList
+          .filter((x) => {
+            return x.elementIndexes.includes(
+              this.elements.findIndex((x) => x == this.filterElement)
+            );
+          })
+          .filter((x) => {
+            return x.attributes.includes(this.filterAttribute);
+          });
+      }
     },
 
     endAt() {
