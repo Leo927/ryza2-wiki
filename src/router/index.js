@@ -6,14 +6,9 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/dashboard',
+    path: '/',
     name: '主页',
     component: Home
-  },
-  {
-    path: '/',
-    redirect: 'dashboard'
-    
   },
   {
     path: '/items',

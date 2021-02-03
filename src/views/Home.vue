@@ -7,7 +7,7 @@
         <l-v-search
           name="search"
           class="mx-auto"
-          :collections="['items', 'monsters', 'pickables', 'maps']"
+          :collections="['items', 'maps']"
         ></l-v-search>
       </b-col>
     </b-row>
