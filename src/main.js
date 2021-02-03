@@ -54,6 +54,7 @@ new Vue({
       this.$store.state.attributes = response.data().attributes; 
       this.$store.state.admins = response.data().admins; 
       this.$store.state.defaultItemTypeIndex = response.data().defaultItemTypeIndex; 
+      this.$store.state.elementColors = response.data().elementColors; 
     });
 
     firebase.auth().onAuthStateChanged((user) => {

@@ -10,6 +10,14 @@
       ></b-pagination>
     </b-row>
     <b-row>
+      <b-form-group id="input-group-3" class="col-md" label="类型" label-for="input-3">
+        <b-form-select
+          id="input-3"
+          v-model="filterItemType"
+          :options="itemTypes"
+          required
+        ></b-form-select>
+      </b-form-group>
       <b-form-group id="input-group-3" class="col-md" label="五行" label-for="input-3">
         <b-form-select
           id="input-3"
@@ -18,6 +26,7 @@
           required
         ></b-form-select>
       </b-form-group>
+      
       <b-form-group id="input-group-3" class="col-md" label="属性:" label-for="input-3">
         <b-form-select
           id="input-3"
@@ -60,6 +69,8 @@ export default {
 
       filterAttribute: null,
 
+      filterItemType:null, 
+
       currentPage: 1,
 
       fields: [
@@ -81,24 +92,31 @@ export default {
     ...mapState(["itemTypes", "items", "attributes", "elements"]),
 
     itemList() {
-      var rawItemList = this.items.map((x) => {
+      var filteredList = this.items.map((x) => {
         return { ...x, itemType: this.itemTypes[x.itemTypeIndex] };
       });
-      if (!this.filterAttribute || !this.filterElement) {
 
-        return rawItemList;
-
-      } else {
-        return rawItemList
-          .filter((x) => {
+      if( this.filterElement){
+        filteredList = filteredList.filter((x) => {
             return x.elementIndexes.includes(
               this.elements.findIndex((x) => x == this.filterElement)
             );
           })
-          .filter((x) => {
+      }
+
+      if (this.filterAttribute) {
+        filteredList = filteredList.filter((x) => {
             return x.attributes.includes(this.filterAttribute);
           });
+      } 
+      
+      if (this.filterItemType){
+        filteredList = filteredList.filter((x) => {
+            return x.itemType == this.filterItemType;
+          });
       }
+      
+      return filteredList
     },
 
     endAt() {

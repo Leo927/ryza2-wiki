@@ -7,20 +7,6 @@ export default {
         commit('setState', newMode);
     },
 
-    updateSetting({state}) {
-        db.collection('misc').doc('settings').get().then((response) => {
-            state.admins = response.data().admins;
-            state.itemTypes = response.data().itemTypes;
-            state.toolTypes = response.data().toolTypes;
-            state.elements = response.data().elements;
-            state.locations = response.data().locations;
-            state.attributes = response.data().attributes; 
-            state.defaultItemTypeIndex = response.data().defaultItemTypeIndex; 
-            
-        })
-    },
-
-
     async search(_, { keyword, collections }) {
         var queries = [];
         collections.forEach(col => {
@@ -30,5 +16,5 @@ export default {
         return data.map(x => x.docs).flat(2).map((x) => { return { ...x.data(), id: x.id } })
     },
 
-
+    
 }

@@ -228,7 +228,7 @@ export default {
     createMode() {
       return this.$route.params.id == null && this.editMode;
     },
-    ...mapState(["editMode", "itemTypes", "elements", "attributes", "defaultItemTypeIndex"]),
+    ...mapState(["editMode", "itemTypes", "elements", "attributes", "defaultItemTypeIndex", "elementColors"]),
 
     elementOptions() {
       return this.elements.map((value, index) => {

@@ -8,5 +8,6 @@ export default{
     locations:[],
     items:[],
     attributes:[],
-    defaultItemTypeIndex: 0
+    defaultItemTypeIndex: 0,
+    elementColors: []
 }
