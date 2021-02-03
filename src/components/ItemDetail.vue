@@ -321,6 +321,7 @@ export default {
         this.original = JSON.parse(JSON.stringify(this.item));
         this.photoFile = null;
       }else{
+        this.item = emptyItem();
         this.item.itemTypeIndex = this.defaultItemTypeIndex
       }
       this.result = "";
