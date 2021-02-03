@@ -235,9 +235,9 @@ export default {
       }
       if(this.createMode){
         await createItem(this.item, this.photoFile)
-        setTimeout(() => {
-          this.$router.push(`/${this.item.type}/${this.item.id}`)
-        }, 1000);        
+        this.result= "修改";
+        this.lastItem = this.item.name;
+        this.item = emptyItem();
 
       }else if(this.editMode){
         await updateItem(this.item, this.original, this.photoFile)
