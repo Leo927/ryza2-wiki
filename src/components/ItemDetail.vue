@@ -9,6 +9,8 @@
           {{ lastItem }} {{ result }}成功
         </div>
 
+        <b-button v-if="true" @click="addItemIndex">DEBUG</b-button>
+
         <b-row>
           <img
             class="col-md-3"
@@ -178,7 +180,7 @@ import { mapState } from "vuex";
 import { emptyItem } from "@/models/item";
 import { mapActions } from "vuex";
 import Search from "@/components/Search";
-import { createItem, getItem, deleteItem, updateItem } from '@/dbAccess/item';
+import { createItem, getItem, deleteItem, updateItem, addItemIndex } from '@/dbAccess/item';
 
 export default {
   data() {
@@ -228,6 +230,8 @@ export default {
       "searchAll",
       "updateDifferences",
     ]),
+
+    addItemIndex(){addItemIndex(this.item)},
 
     async onSubmit() {
       if(!this.editMode){
@@ -291,6 +295,8 @@ export default {
         const response = await getItem(this.id);
         this.item = response.data()
         this.original = JSON.parse(JSON.stringify(this.item));
+        this.photoFile = null;
+        this.result = "";
       }
     },
   },

@@ -39,10 +39,17 @@ new Vue({
   router,
   store,
   created() {
+    this.$store.dispatch('updateSetting')
+
     firebase.auth().onAuthStateChanged((user) => {
       this.$store.state.uid = user ? user.uid : null
 
       this.$store.dispatch('updateSetting');
+    });
+
+    db.collection("item").doc("index")
+      .onSnapshot((doc) =>{
+      this.$store.state.items = doc.data().itemArray;
     });
 
 

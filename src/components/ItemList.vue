@@ -22,7 +22,6 @@
 </template>
 
 <script>
-import { db } from "@/main";
 import { mapState } from "vuex";
 const dataLimit = 10;
 //import { mapState } from 'vuex';
@@ -30,14 +29,13 @@ export default {
   data() {
     return {
       fields: ["name", "itemType"],
-      items: [],
       keyword: "",
       startAt: 0,
     };
   },
 
   computed: {
-    ...mapState(["itemTypes"]),
+    ...mapState(["itemTypes", 'items']),
 
     itemList() {
       return this.items.map((x) => {
@@ -57,28 +55,6 @@ export default {
       this.getNextPage()
     },
 
-    getNextPage() {
-      
-      var ref = db.collection("item").orderBy("name").limit(dataLimit).startAfter(this.startAt);
-      ref.get().then((documentSnapshots) => {
-        if(documentSnapshots.docs.length ==0){
-          return;
-        }
-        this.startAt =
-          documentSnapshots.docs[documentSnapshots.docs.length - 1];
-          this.items = documentSnapshots.docs.map(x=>x.data())
-      });
-    },
-
-    getPreviousPage(){
-      var ref = db.collection("item").orderBy("name").limit(dataLimit).endAt(this.startAt);
-      ref.get().then((documentSnapshots) => {
-        this.startAt =
-          documentSnapshots.docs[0];
-          this.items = documentSnapshots.docs.map(x=>x.data())
-        this.startAt = this.startAt <0?0:this.startAt;
-      });
-    }
   },
 
   created(){

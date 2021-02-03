@@ -5,5 +5,6 @@ export default{
     itemTypes:[],
     toolTypes:[],
     elements:[],
-    locations:[]
+    locations:[],
+    items:[]
 }

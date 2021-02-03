@@ -6,13 +6,16 @@ service cloud.firestore {
           request.time < timestamp.date(2021, 2, 28);
     }
   }
-
+  
   match /databases/item/documents {
-    allow write: if id != null;
+    allow write: if request.resource.data.id != null &&
+    								request.resource.data.name != "" &&
+                    request.resource.data.name.length > 0 
   }
 
   match /databases/map/documents {
-    allow write: if id != null;
+    allow write: if request.resource.data.id != null &&
+    								request.resource.data.name != "" &&
+                    request.resource.data.name.length > 0 
   }
-
 }
