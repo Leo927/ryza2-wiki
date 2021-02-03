@@ -7,5 +7,6 @@ export default{
     elements:[],
     locations:[],
     items:[],
-    attributes:[]
+    attributes:[],
+    defaultItemTypeIndex: 0
 }

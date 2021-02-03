@@ -53,6 +53,7 @@ new Vue({
       this.$store.state.locations = response.data().locations;
       this.$store.state.attributes = response.data().attributes; 
       this.$store.state.admins = response.data().admins; 
+      this.$store.state.defaultItemTypeIndex = response.data().defaultItemTypeIndex; 
     });
 
     firebase.auth().onAuthStateChanged((user) => {

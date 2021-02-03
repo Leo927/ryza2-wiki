@@ -29,6 +29,22 @@
       </b-row>
       <hr />
 
+      <h5>默认道具类型</h5>
+      <b-row>
+        <b-form-group
+              id="input-group-3"
+              label="物品类型:"
+              label-for="input-3"
+            >
+              <b-form-select
+                id="input-3"
+                v-model="defaultItemTypeIndex"
+                :options="itemTypeOptions"
+                required
+              ></b-form-select>
+            </b-form-group>
+      </b-row>
+
     </div>
   </b-container>
 </template>
@@ -38,18 +54,37 @@ import { mapGetters, mapState } from "vuex";
 import {reIndexItems} from '@/dbAccess/item'
 import { addAttribute, removeAttribute } from "@/dbAccess/config";
 import {reIndexMaps} from '@/dbAccess/map'
+import {setdefaultItemTypeIndex} from '@/dbAccess/config'
+import store from '@/store'
 
 export default {
   data() {
     return {
-      attribute: "",
+      attribute: ""
     };
   },
 
   computed: {
     ...mapGetters(["isAdmin"]),
 
-    ...mapState(["attributes"]),
+    ...mapState(["attributes", "itemTypes", 'defaultItemTypeIndex']),
+
+    itemTypeOptions() {
+      return this.itemTypes.map((value, index) => {
+        return { text: value, value: index };
+      });
+    },
+
+    defaultItemTypeIndex:{
+      get: ()=>{
+        return store.state.defaultItemTypeIndex
+      },
+
+      set:(value)=>{
+        setdefaultItemTypeIndex(value)
+      }
+    }
+
   },
 
   created() {
@@ -67,6 +102,9 @@ export default {
       addAttribute(this.attribute);
       this.attribute = ""
     },
+
+    setdefaultItemTypeIndex,
+    
 
     reIndexItems,
 

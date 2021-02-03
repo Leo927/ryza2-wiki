@@ -15,3 +15,9 @@ export async function removeAttribute(attr){
         attributes: firebase.firestore.FieldValue.arrayRemove(attr)
     });
 }
+
+export async function setdefaultItemTypeIndex(value){
+    await settingRef.update({
+        defaultItemTypeIndex: value
+    })
+}

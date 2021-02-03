@@ -15,6 +15,8 @@ export default {
             state.elements = response.data().elements;
             state.locations = response.data().locations;
             state.attributes = response.data().attributes; 
+            state.defaultItemTypeIndex = response.data().defaultItemTypeIndex; 
+            
         })
     },
 

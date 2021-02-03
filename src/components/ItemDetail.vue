@@ -228,7 +228,7 @@ export default {
     createMode() {
       return this.$route.params.id == null && this.editMode;
     },
-    ...mapState(["editMode", "itemTypes", "elements", "attributes"]),
+    ...mapState(["editMode", "itemTypes", "elements", "attributes", "defaultItemTypeIndex"]),
 
     elementOptions() {
       return this.elements.map((value, index) => {
@@ -321,6 +321,8 @@ export default {
         this.original = JSON.parse(JSON.stringify(this.item));
         this.photoFile = null;
         this.result = "";
+      }else{
+        this.item.itemTypeIndex = this.defaultItemTypeIndex
       }
     },
 
