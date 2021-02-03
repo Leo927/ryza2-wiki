@@ -3,7 +3,7 @@
     <b-row>
     <b-table hover :items="itemList" :fields="fields">
       <template #cell(name)="data">
-        <router-link :to="`/${data.item.type}/${data.item['.key']}`">{{
+        <router-link :to="`/${data.item.type}/${data.item.id}`">{{
           data.item.name
         }}</router-link>
       </template>
