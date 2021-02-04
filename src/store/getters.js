@@ -1,6 +1,6 @@
 export default{
-    isAdmin: (state)=>{
-        return state.admins.includes(state.uid) 
+    isAdmin: ()=>{
+        return true
     },
 
     itemArray: (state)=>{
