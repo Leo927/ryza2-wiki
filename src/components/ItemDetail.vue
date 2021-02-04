@@ -8,9 +8,9 @@
         >
           {{ lastItem }} {{ result }}成功
         </div>
-
         <b-row>
           <img
+          v-if="false"
             class="col-md-3"
             :src="
               item && item.photoUrl
@@ -37,7 +37,9 @@
             </b-form-group>
             <b-form-group id="input-group-1" label="名称:" label-for="input-1">
               <b-form-input
+              
                 id="input-1"
+                ref="testRef"
                 v-model="item.name"
                 type="text"
                 placeholder="输入名称"
@@ -62,6 +64,7 @@
 
             <b-form-group v-if="editMode">
               <b-form-file
+              v-if="false"
                 v-model="photoFile"
                 :state="Boolean(photoFile)"
                 placeholder="选择一个文件或者拖到此处"
@@ -257,21 +260,23 @@ export default {
     ...mapActions(["searchAll", "updateDifferences"]),
 
     async onSubmit() {
+      if(!this.item.name || this.item.name.length <= 0){
+        return;
+      }
       if (!this.editMode) {
         throw "User submitting while not in edit mode";
       }
+      
       if (this.createMode) {
         await createItem(this.item, this.photoFile);
-        
-        this.lastItem = this.item.name;
         this.initialize()
         this.result = "创建";
       } else if (this.editMode) {
         await updateItem(this.item, this.original, this.photoFile);
-        
         this.initialize()
         this.result = "修改";
-      }
+      }      
+        this.lastItem = this.item.name;        
     },
 
     setElementIndexes(checked) {
@@ -318,13 +323,14 @@ export default {
       if (this.id) {
         const response = await getItem(this.id);
         this.item = this.checkAttributes(response.data());
-        this.original = JSON.parse(JSON.stringify(this.item));
-        this.photoFile = null;
       }else{
         this.item = emptyItem();
-        this.item.itemTypeIndex = this.defaultItemTypeIndex
+        this.item.itemTypeIndex = this.defaultItemTypeIndex;
       }
+      this.photoFile = null;
+      this.original = JSON.parse(JSON.stringify(this.item));
       this.result = "";
+      this.$ref.nameField.input.focus();
     },
 
     checkAttributes(item){
@@ -343,5 +349,17 @@ export default {
   created() {
     this.initialize();
   },
+
+  mounted(){
+    document.addEventListener('keyup', (ev)=>{
+      if(ev.key == 'F4'){
+        ev.preventDefault();
+        this.onSubmit()
+        this.$refs.testRef.focus();
+      }
+      
+    })
+  }
+  
 };
 </script>

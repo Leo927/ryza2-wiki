@@ -6,6 +6,7 @@
       :options="options"
       label="name"
       :filter="pinyinFilter"
+      ref="searchbar"
     >
     </v-select>
   </div>
@@ -25,7 +26,7 @@ export default {
       },
     },
   },
-
+directives: { focus: { inserted: function (el) { el.focus() } } } ,
   data() {
     return {
       keyword: "",
@@ -35,7 +36,11 @@ export default {
 
   methods: {
     clickOption(value) {
-      this.onSelectOption(value);
+      this.onSelectOption(value);     
+      setTimeout(() => {
+        this.$refs.searchbar.$refs.search.focus();   
+      }, 100);
+      
     },
 
     pinyinFilter(array, keyword) {
@@ -92,5 +97,6 @@ export default {
       return this.collections.map((x) => this.$store.state[x]).flat(3);
     },
   },
+
 };
 </script>

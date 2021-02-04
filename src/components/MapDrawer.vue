@@ -1,7 +1,8 @@
 <template>
   <div>
+    <span class="dot"></span>
     <Square :size="'1200px'">
-      <div>
+      <div class="photoContainer">
         <img
           ref="mapImage"
           :src="this.map.photoUrl"
@@ -10,13 +11,14 @@
           height="100%"
           @click.stop="onClickMap"
         />
+        
         <i
           v-for="(posData, index) in dotList"
           :key="index"
           @click.stop="onDotClick(posData)"
-          class="fas fa-circle mapElement"
+          class="dot"
           :style="{
-            color: map.resourcePoints[posData.rpIndex].color,
+            'background-color': map.resourcePoints[posData.rpIndex].color,
             left: `${posData.pos.x * 100}%`,
             top: `${posData.pos.y * 100}%`,
           }"
@@ -30,6 +32,18 @@
 .mapElement {
   position: absolute;
 }
+.photoContainer{
+  position: relative;
+}
+
+.dot {
+  height: 5px;
+  width: 5px;
+  border-radius: 50%;
+  display: inline-block;
+  position: absolute;
+}
+
 
 #sample {
   color: yellow;
@@ -56,7 +70,7 @@ export default {
 
   computed: {
     size() {
-      return this.$refs.mapImage.height;
+      return {y:this.$refs.mapImage.height, x:this.$refs.mapImage.width};
     },
 
     ...mapState(["editMode"]),
@@ -89,16 +103,18 @@ export default {
         return;
       }
       var percentPos = this.getRelativePercentageCoor(event);
+      console.log(percentPos)
       this.clickHandler(percentPos);
     },
 
     getRelativePercentageCoor(event) {
       var mousePos = { x: event.clientX, y: event.clientY };
-      var size = event.target.height;
+      var height = event.target.height;
+      var width = event.target.width;
       var rect = event.target.getBoundingClientRect();
       var mapPos = { x: rect.left, y: rect.top };
       var relativePos = { x: mousePos.x - mapPos.x, y: mousePos.y - mapPos.y };
-      var percentPos = { x: relativePos.x / size, y: relativePos.y / size };
+      var percentPos = { x: relativePos.x / width, y: relativePos.y / height };
       return percentPos;
     },
 
